@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init("service_c45xjgq");</script>
+<script>emailjs.init("0Q_5ya6Jw6StQ2m2D");</script>
 <style>
   :root {
     --gold: #f0a500;
@@ -487,6 +487,13 @@
     border-radius: 100px;
     padding: 4px 12px;
   }
+
+#poster-block{
+  background-image: url('ToolsImages/PosterImg.jpeg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(100% - 20px) calc(100% - 20px);
+}
 
   /* ── HOW IT WORKS ── */
   #how { padding: 120px 0; background: var(--bg-2); }
@@ -1513,7 +1520,7 @@
     </div>
 
     <div class="services-grid reveal">
-      <div class="service-card">
+      <div class="service-card" id="poster-block">
         <div class="service-icon">🎨</div>
         <div class="service-name">Posters & Graphics</div>
         <div class="service-desc">Event posters, brand graphics, social media visuals, and print-ready artwork that stands out in the feed.</div>
@@ -2217,43 +2224,5 @@ window.addEventListener('scroll', () => {
 });
 </script>
 
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
