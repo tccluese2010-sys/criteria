@@ -4,13 +4,28 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Profile Settings — CRITERIA</title>
+<link rel="icon" href="Tools/Logo Black.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<!-- Apply saved theme & accent early to avoid flash -->
+<script>
+  (function(){
+    const t = localStorage.getItem('criteria-theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+    const a = localStorage.getItem('criteria-accent'); if (a) {
+      document.documentElement.style.setProperty('--gold', a);
+      try{ const r=parseInt(a.slice(1,3),16), g=parseInt(a.slice(3,5),16), b=parseInt(a.slice(5,7),16); document.documentElement.style.setProperty('--gold-glow', `rgba(${r},${g},${b},0.12)`); document.documentElement.style.setProperty('--gold-border', `rgba(${r},${g},${b},0.25)`);}catch(e){}
+    }
+  })();
+</script>
+<script src="themeAccent.js" defer></script>
 <style>
+/* ══════════════════════════════════════════
+   VARIABLES
+══════════════════════════════════════════ */
 :root {
   --gold: #f0a500;
+  --gold-dim: #c98a00;
   --gold-glow: rgba(240,165,0,0.12);
   --gold-border: rgba(240,165,0,0.25);
   --bg: #080808;
@@ -34,319 +49,406 @@
   --transition: 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
   --sidebar-w: 260px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
-::selection{background:var(--gold);color:#000;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--text-3);border-radius:2px;}
+[data-theme="light"] {
+  --bg: #f5f5f2; --bg-2: #eeeeea; --bg-3: #e6e6e2; --bg-card: #ffffff;
+  --text: #0a0a0a; --text-2: #555555; --text-3: #999999;
+  --border: rgba(0,0,0,0.08); --border-hover: rgba(0,0,0,0.15);
+  --select-opt-bg: #ffffff;
+}
 
-/* ── LAYOUT ── */
-.app-shell{display:flex;min-height:100vh;}
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body); font-size: 15px;
+  line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh;
+}
+::selection { background: var(--gold); color: #000; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 2px; }
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:var(--sidebar-w);flex-shrink:0;
-  background:var(--bg-2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  position:fixed;top:0;left:0;height:100vh;
-  z-index:50;overflow-y:auto;
-}
-.sidebar-top{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);}
-.sidebar-logo{
-  display:flex;align-items:center;gap:8px;text-decoration:none;
-  font-family:var(--font-display);font-weight:800;font-size:0.95rem;
-  letter-spacing:0.2em;color:var(--text);
-}
-.logo-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.6;}}
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.app-shell { display: flex; min-height: 100vh; }
 
-.sidebar-user{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
-.sidebar-avatar-wrap{display:flex;align-items:center;gap:0.875rem;}
-.sidebar-avatar{
-  width:42px;height:42px;border-radius:50%;
-  background:var(--gold-glow);border:2px solid var(--gold-border);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-display);font-weight:700;font-size:0.85rem;color:var(--gold);
-  overflow:hidden;flex-shrink:0;
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--bg-2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 50; overflow-y: auto;
 }
-.sidebar-avatar img{width:100%;height:100%;object-fit:cover;}
-.sidebar-user-name{font-family:var(--font-display);font-weight:700;font-size:0.88rem;margin-bottom:2px;}
-.sidebar-user-email{font-size:0.72rem;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.sidebar-top { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--border); }
+.sidebar-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; font-family: var(--font-display);
+  font-weight: 800; font-size: 0.95rem; letter-spacing: 0.2em; color: var(--text);
+}
+.logo-dot {
+  width: 7px; height: 7px; background: var(--gold);
+  border-radius: 50%; animation: pulse-dot 2.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+.sidebar-user { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.sidebar-avatar-wrap { display: flex; align-items: center; gap: 0.875rem; }
+.sidebar-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold-glow); border: 2px solid var(--gold-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 0.85rem; color: var(--gold); overflow: hidden; flex-shrink: 0;
+}
+.sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sidebar-user-name { font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; margin-bottom: 2px; }
+.sidebar-user-email { font-size: 0.72rem; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.sidebar-nav { padding: 1rem 0.75rem; flex: 1; }
+.nav-section-label {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-3);
+  padding: 0.5rem 0.75rem; margin-top: 0.5rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 0.75rem; border-radius: var(--radius-sm);
+  text-decoration: none; color: var(--text-2); font-size: 0.85rem;
+  transition: all var(--transition); cursor: pointer;
+  border: none; background: none; width: 100%; position: relative;
+}
+.nav-item:hover { color: var(--text); background: var(--bg-3); }
+.nav-item.active { color: var(--gold); background: var(--gold-glow); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 2px; background: var(--gold); border-radius: 2px;
+}
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar-bottom { padding: 1rem 0.75rem; border-top: 1px solid var(--border); }
 
-.sidebar-nav{padding:1rem 0.75rem;flex:1;}
-.nav-section-label{font-size:0.62rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);padding:0.5rem 0.75rem;margin-top:0.5rem;}
-.nav-item{
-  display:flex;align-items:center;gap:0.75rem;
-  padding:0.65rem 0.75rem;border-radius:var(--radius-sm);
-  text-decoration:none;color:var(--text-2);font-size:0.85rem;
-  transition:all var(--transition);cursor:pointer;border:none;background:none;width:100%;
-  position:relative;
+/* ══════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════ */
+.main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  padding: 0 2.5rem; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,8,8,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
 }
-.nav-item:hover{color:var(--text);background:var(--bg-3);}
-.nav-item.active{color:var(--gold);background:var(--gold-glow);}
-.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--gold);border-radius:2px;}
-.nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
-.nav-badge{margin-left:auto;background:var(--gold);color:#000;font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:100px;}
+.topbar-breadcrumb { font-size: 0.78rem; color: var(--text-3); }
+.topbar-breadcrumb span { color: var(--text-2); }
+.topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+.topbar-btn {
+  padding: 8px 18px; border-radius: 100px; font-family: var(--font-display);
+  font-weight: 600; font-size: 0.78rem; letter-spacing: 0.06em;
+  border: none; cursor: pointer; transition: all var(--transition);
+}
+.topbar-btn-secondary { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-hover); }
+.topbar-btn-secondary:hover { color: var(--text); }
+.topbar-btn-primary { background: var(--gold); color: #000; }
+.topbar-btn-primary:hover { background: var(--gold-hover); transform: translateY(-1px); }
+.page-content { padding: 2.5rem; max-width: 860px; }
 
-.sidebar-bottom{padding:1rem 0.75rem;border-top:1px solid var(--border);}
+/* ══════════════════════════════════════════
+   SECTION CARDS
+══════════════════════════════════════════ */
+.settings-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.5rem;
+}
+.section-header {
+  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+.section-subtitle { font-size: 0.78rem; color: var(--text-3); }
+.section-body { padding: 2rem; }
 
-/* ── MAIN ── */
-.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+/* ══════════════════════════════════════════
+   AVATAR UPLOAD
+══════════════════════════════════════════ */
+.avatar-upload-area { display: flex; align-items: center; gap: 2rem; }
+.avatar-large {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: var(--gold-glow); border: 2px solid var(--gold-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 1.8rem; color: var(--gold);
+  overflow: hidden; flex-shrink: 0; position: relative; cursor: pointer;
+}
+.avatar-large img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avatar-initials-text { pointer-events: none; }
+.avatar-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity var(--transition); border-radius: 50%;
+  font-size: 1.2rem; pointer-events: none;
+}
+.avatar-large:hover .avatar-overlay { opacity: 1; }
+.avatar-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+.avatar-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 9px 18px; border-radius: 100px; font-family: var(--font-display);
+  font-weight: 600; font-size: 0.78rem; border: none; cursor: pointer;
+  transition: all var(--transition);
+}
+.avatar-btn-upload { background: var(--gold); color: #000; }
+.avatar-btn-upload:hover { background: var(--gold-hover); }
+.avatar-btn-remove { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-hover); }
+.avatar-btn-remove:hover { color: var(--error); border-color: rgba(239,68,68,0.35); }
+.avatar-hint { font-size: 0.72rem; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+#avatar-file-input { display: none; }
 
-/* ── TOPBAR ── */
-.topbar{
-  position:sticky;top:0;z-index:40;
-  padding:0 2.5rem;height:64px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(8,8,8,0.8);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
+/* ══════════════════════════════════════════
+   CROP MODAL
+══════════════════════════════════════════ */
+.crop-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(18px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
-.topbar-title{font-family:var(--font-display);font-weight:700;font-size:1rem;}
-.topbar-breadcrumb{font-size:0.78rem;color:var(--text-3);}
-.topbar-breadcrumb span{color:var(--text-2);}
-.topbar-actions{display:flex;align-items:center;gap:0.75rem;}
-.topbar-btn{
-  padding:8px 18px;border-radius:100px;font-family:var(--font-display);
-  font-weight:600;font-size:0.78rem;letter-spacing:0.06em;border:none;cursor:pointer;
-  transition:all var(--transition);
+.crop-overlay.open { opacity: 1; pointer-events: all; }
+.crop-modal {
+  background: var(--bg-3); border: 1px solid var(--border-hover);
+  border-radius: 24px; padding: 2rem; width: 92%; max-width: 420px;
 }
-.topbar-btn-secondary{background:var(--bg-3);color:var(--text-2);border:1px solid var(--border-hover);}
-.topbar-btn-secondary:hover{color:var(--text);}
-.topbar-btn-primary{background:var(--gold);color:#000;}
-.topbar-btn-primary:hover{background:#ffc030;transform:translateY(-1px);}
+.crop-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; }
+.crop-sub { font-size: 0.78rem; color: var(--text-3); margin-bottom: 1.25rem; }
+/* circular viewport — the dark ring masks outside the circle */
+.crop-canvas-wrap {
+  position: relative; width: 100%; aspect-ratio: 1;
+  background: #1a1a1a; border-radius: var(--radius);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.crop-circle-mask {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(circle 47% at 50% 50%, transparent 99%, rgba(0,0,0,0.72) 100%);
+}
+/* guide ring */
+.crop-circle-guide {
+  position: absolute; z-index: 3; pointer-events: none;
+  width: 94%; height: 94%; border-radius: 50%;
+  border: 1.5px dashed rgba(240,165,0,0.4);
+  top: 3%; left: 3%;
+}
+#crop-image {
+  max-width: 100%; max-height: 100%; display: block;
+  cursor: grab; user-select: none; transform-origin: center;
+  position: relative; z-index: 1;
+}
+#crop-image:active { cursor: grabbing; }
+.crop-controls { margin-top: 1.1rem; }
+.crop-slider-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.7rem; color: var(--text-3); margin-bottom: 0.4rem;
+}
+.crop-slider { width: 100%; accent-color: var(--gold); cursor: pointer; height: 4px; }
+.crop-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+.crop-btn {
+  flex: 1; padding: 12px; border-radius: 100px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 0.8rem; border: none; cursor: pointer; transition: all var(--transition);
+}
+.crop-btn-cancel { background: var(--bg-2); color: var(--text-2); border: 1px solid var(--border-hover); }
+.crop-btn-cancel:hover { color: var(--text); }
+.crop-btn-apply { background: var(--gold); color: #000; }
+.crop-btn-apply:hover { background: var(--gold-hover); }
 
-/* ── PAGE CONTENT ── */
-.page-content{padding:2.5rem;max-width:860px;}
+/* ══════════════════════════════════════════
+   FORM ELEMENTS
+══════════════════════════════════════════ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.form-label .req { color: var(--gold); margin-left: 2px; }
+.form-input, .form-select {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: var(--font-body); font-size: 0.88rem;
+  padding: 11px 14px; outline: none; width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--gold-border);
+  box-shadow: 0 0 0 3px rgba(240,165,0,0.06);
+}
+.form-input::placeholder { color: var(--text-3); }
+.form-input.email-verified { border-color: rgba(34,197,94,0.4); padding-right: 38px; }
+.form-input-wrap { position: relative; }
+.input-status-icon {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%); font-size: 0.85rem; pointer-events: none;
+}
+.form-select {
+  appearance: none; cursor: pointer; color-scheme: dark;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;
+}
+.form-hint { font-size: 0.7rem; color: var(--text-3); margin-top: 2px; }
+.form-hint.success { color: var(--success); }
+.form-hint.error { color: var(--error); }
+.phone-wrap { display: flex; gap: 0.5rem; }
+.phone-code { width: 94px; flex-shrink: 0; }
 
-/* ── SECTION CARDS ── */
-.settings-section{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem;
+/* ══════════════════════════════════════════
+   EMAIL VERIFY BADGE
+══════════════════════════════════════════ */
+.verify-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.verify-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+  padding: 4px 10px; border-radius: 100px;
 }
-.section-header{
-  padding:1.5rem 2rem;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
+.verify-badge.verified {
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid rgba(34,197,94,0.25);
 }
-.section-header-left{}
-.section-title{font-family:var(--font-display);font-weight:700;font-size:0.95rem;margin-bottom:3px;}
-.section-subtitle{font-size:0.78rem;color:var(--text-3);}
-.section-body{padding:2rem;}
+.verify-badge.unverified {
+  background: var(--error-bg); color: var(--error);
+  border: 1px solid rgba(239,68,68,0.25);
+}
+.verify-link {
+  font-size: 0.75rem; color: var(--gold); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.verify-link:hover { color: var(--gold-hover); }
 
-/* ── AVATAR UPLOAD ── */
-.avatar-upload-area{display:flex;align-items:center;gap:2rem;}
-.avatar-large{
-  width:96px;height:96px;border-radius:50%;
-  background:var(--gold-glow);border:2px solid var(--gold-border);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-display);font-weight:700;font-size:1.8rem;color:var(--gold);
-  overflow:hidden;flex-shrink:0;position:relative;cursor:pointer;
+/* ══════════════════════════════════════════
+   LINKED ACCOUNTS
+══════════════════════════════════════════ */
+.linked-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.linked-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.25rem; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  transition: border-color var(--transition);
 }
-.avatar-large img{width:100%;height:100%;object-fit:cover;}
-.avatar-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.6);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity var(--transition);border-radius:50%;
-  font-size:1.2rem;
+.linked-item.connected { border-color: rgba(34,197,94,0.25); }
+.linked-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.avatar-large:hover .avatar-overlay{opacity:1;}
-.avatar-actions{display:flex;flex-direction:column;gap:0.6rem;}
-.avatar-btn{
-  display:inline-flex;align-items:center;gap:0.5rem;
-  padding:9px 18px;border-radius:100px;font-family:var(--font-display);
-  font-weight:600;font-size:0.78rem;border:none;cursor:pointer;transition:all var(--transition);
+.linked-info { flex: 1; min-width: 0; }
+.linked-name { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; }
+.linked-status { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linked-status.ok { color: var(--success); }
+.linked-action {
+  font-size: 0.75rem; font-family: var(--font-display); font-weight: 600;
+  padding: 7px 14px; border-radius: 100px; border: none; cursor: pointer;
+  transition: all var(--transition); white-space: nowrap; flex-shrink: 0;
 }
-.avatar-btn-upload{background:var(--gold);color:#000;}
-.avatar-btn-upload:hover{background:#ffc030;}
-.avatar-btn-remove{background:var(--bg-3);color:var(--text-2);border:1px solid var(--border-hover);}
-.avatar-btn-remove:hover{color:var(--error);border-color:rgba(239,68,68,0.3);}
-.avatar-hint{font-size:0.72rem;color:var(--text-3);margin-top:4px;}
-#avatar-file-input{display:none;}
+.linked-action.connect { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-hover); }
+.linked-action.connect:hover { border-color: var(--gold-border); color: var(--gold); }
+.linked-action.disconnect { background: var(--error-bg); color: var(--error); border: 1px solid rgba(239,68,68,0.25); }
+.linked-action.disconnect:hover { background: rgba(239,68,68,0.15); }
 
-/* ── CROP MODAL ── */
-.crop-overlay{
-  position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.85);backdrop-filter:blur(16px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity 0.3s ease;
+/* ══════════════════════════════════════════
+   DANGER ZONE
+══════════════════════════════════════════ */
+.danger-zone { border-color: rgba(239,68,68,0.2); }
+.danger-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem 0; border-bottom: 1px solid var(--border);
 }
-.crop-overlay.open{opacity:1;pointer-events:all;}
-.crop-modal{
-  background:var(--bg-3);border:1px solid var(--border-hover);
-  border-radius:24px;padding:2rem;width:100%;max-width:440px;
+.danger-item:last-child { border-bottom: none; padding-bottom: 0; }
+.danger-label { font-size: 0.88rem; font-weight: 500; margin-bottom: 3px; }
+.danger-desc { font-size: 0.75rem; color: var(--text-3); }
+.danger-btn {
+  padding: 8px 16px; border-radius: 100px; font-family: var(--font-display);
+  font-weight: 600; font-size: 0.75rem; flex-shrink: 0;
+  border: 1px solid rgba(239,68,68,0.3); background: var(--error-bg);
+  color: var(--error); cursor: pointer; transition: all var(--transition);
 }
-.crop-title{font-family:var(--font-display);font-weight:700;font-size:1.1rem;margin-bottom:0.4rem;}
-.crop-sub{font-size:0.8rem;color:var(--text-3);margin-bottom:1.5rem;}
-.crop-canvas-wrap{
-  position:relative;width:100%;aspect-ratio:1;
-  background:#1a1a1a;border-radius:var(--radius);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.crop-canvas-wrap::before{
-  content:'';position:absolute;inset:0;
-  border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,0.6);
-  z-index:2;pointer-events:none;
-}
-#crop-image{
-  max-width:100%;max-height:100%;
-  cursor:grab;user-select:none;display:block;
-  transform-origin:center;
-}
-#crop-image:active{cursor:grabbing;}
-.crop-controls{margin-top:1.25rem;}
-.crop-slider-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);margin-bottom:0.5rem;}
-.crop-slider{width:100%;accent-color:var(--gold);cursor:pointer;}
-.crop-actions{display:flex;gap:0.75rem;margin-top:1.25rem;}
-.crop-btn{
-  flex:1;padding:12px;border-radius:100px;font-family:var(--font-display);
-  font-weight:700;font-size:0.8rem;border:none;cursor:pointer;transition:all var(--transition);
-}
-.crop-btn-cancel{background:var(--bg-2);color:var(--text-2);border:1px solid var(--border-hover);}
-.crop-btn-apply{background:var(--gold);color:#000;}
-.crop-btn-apply:hover{background:#ffc030;}
+.danger-btn:hover { background: rgba(239,68,68,0.15); }
 
-/* ── FORM FIELDS ── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-.form-group{display:flex;flex-direction:column;gap:0.45rem;}
-.form-group.full{grid-column:1/-1;}
-.form-label{font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);}
-.form-label .req{color:var(--gold);}
-.form-input,.form-select{
-  background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  color:var(--text);font-family:var(--font-body);font-size:0.88rem;
-  padding:11px 14px;outline:none;width:100%;transition:border-color var(--transition);
+/* ══════════════════════════════════════════
+   OTP MODAL
+══════════════════════════════════════════ */
+.otp-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.82); backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
-.form-input:focus,.form-select:focus{border-color:var(--gold-border);}
-.form-input::placeholder{color:var(--text-3);}
-.form-input.verified{border-color:rgba(34,197,94,0.4);padding-right:36px;}
-.form-input-wrap{position:relative;}
-.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:0.85rem;}
-.form-select{appearance:none;cursor:pointer;color-scheme:dark;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;background-size:14px;
+.otp-overlay.open { opacity: 1; pointer-events: all; }
+.otp-modal {
+  background: var(--bg-3); border: 1px solid var(--border-hover);
+  border-radius: 24px; padding: 2.5rem; width: 92%; max-width: 380px; text-align: center;
 }
-.form-select option{background:#1a1a1a;}
-.form-hint{font-size:0.7rem;color:var(--text-3);margin-top:2px;}
-.form-hint.success{color:var(--success);}
-.form-hint.error{color:var(--error);}
+.otp-icon { font-size: 2.4rem; margin-bottom: 1rem; }
+.otp-title { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.4rem; }
+.otp-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.65; margin-bottom: 1.75rem; }
+.otp-desc strong { color: var(--text); }
+.otp-note {
+  font-size: 0.75rem; color: var(--text-3); background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 14px; margin-bottom: 1.5rem; line-height: 1.55;
+}
+.otp-note span { color: var(--gold); }
+.otp-btn {
+  width: 100%; padding: 14px; background: var(--gold); color: #000;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+  border: none; border-radius: 100px; cursor: pointer; transition: all var(--transition);
+}
+.otp-btn:hover { background: var(--gold-hover); }
+.otp-btn-secondary {
+  width: 100%; padding: 12px; margin-top: 0.6rem;
+  background: none; color: var(--text-2); font-family: var(--font-display);
+  font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-hover);
+  border-radius: 100px; cursor: pointer; transition: all var(--transition);
+}
+.otp-btn-secondary:hover { color: var(--text); }
+.otp-resend { font-size: 0.74rem; color: var(--text-3); margin-top: 1rem; }
+.otp-resend a { color: var(--gold); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 
-/* Phone input */
-.phone-wrap{display:flex;gap:0.5rem;}
-.phone-code{width:90px;flex-shrink:0;}
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-3); border: 1px solid var(--border-hover);
+  border-radius: 100px; padding: 12px 24px;
+  font-size: 0.82rem; color: var(--text);
+  opacity: 0; transition: all 0.3s ease; z-index: 400; white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(34,197,94,0.35); color: var(--success); }
+.toast.error   { border-color: rgba(239,68,68,0.35); color: var(--error); }
 
-/* ── VERIFY BADGE ── */
-.verify-row{display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;}
-.verify-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:0.7rem;font-weight:600;letter-spacing:0.06em;
-  padding:4px 10px;border-radius:100px;
-}
-.verify-badge.verified{background:var(--success-bg);color:var(--success);border:1px solid rgba(34,197,94,0.2);}
-.verify-badge.unverified{background:var(--error-bg);color:var(--error);border:1px solid rgba(239,68,68,0.2);}
-.verify-link{font-size:0.75rem;color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-.verify-link:hover{color:#ffc030;}
-
-/* ── LINKED ACCOUNTS ── */
-.linked-list{display:flex;flex-direction:column;gap:0.75rem;}
-.linked-item{
-  display:flex;align-items:center;gap:1rem;
-  padding:1rem 1.25rem;background:var(--bg-2);
-  border:1px solid var(--border);border-radius:var(--radius);
-  transition:border-color var(--transition);
-}
-.linked-item.connected{border-color:rgba(34,197,94,0.2);}
-.linked-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.linked-info{flex:1;}
-.linked-name{font-family:var(--font-display);font-weight:600;font-size:0.85rem;}
-.linked-status{font-size:0.72rem;color:var(--text-3);margin-top:2px;}
-.linked-status.ok{color:var(--success);}
-.linked-action{
-  font-size:0.75rem;font-family:var(--font-display);font-weight:600;
-  padding:7px 14px;border-radius:100px;border:none;cursor:pointer;
-  transition:all var(--transition);
-}
-.linked-action.connect{background:var(--bg-3);color:var(--text-2);border:1px solid var(--border-hover);}
-.linked-action.connect:hover{border-color:var(--gold-border);color:var(--gold);}
-.linked-action.disconnect{background:var(--error-bg);color:var(--error);border:1px solid rgba(239,68,68,0.2);}
-.linked-action.disconnect:hover{background:rgba(239,68,68,0.15);}
-
-/* ── DANGER ZONE ── */
-.danger-zone{border-color:rgba(239,68,68,0.2);}
-.danger-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 0;border-bottom:1px solid var(--border);
-}
-.danger-item:last-child{border-bottom:none;padding-bottom:0;}
-.danger-label{font-size:0.88rem;font-weight:500;margin-bottom:3px;}
-.danger-desc{font-size:0.75rem;color:var(--text-3);}
-.danger-btn{
-  padding:8px 16px;border-radius:100px;font-family:var(--font-display);
-  font-weight:600;font-size:0.75rem;border:1px solid rgba(239,68,68,0.3);
-  background:var(--error-bg);color:var(--error);cursor:pointer;
-  transition:all var(--transition);white-space:nowrap;
-}
-.danger-btn:hover{background:rgba(239,68,68,0.15);}
-
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--bg-3);border:1px solid var(--border-hover);
-  border-radius:100px;padding:12px 24px;
-  font-size:0.82rem;color:var(--text);
-  opacity:0;transition:all 0.3s ease;z-index:300;white-space:nowrap;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.success{border-color:rgba(34,197,94,0.3);color:var(--success);}
-.toast.error{border-color:rgba(239,68,68,0.3);color:var(--error);}
-
-/* ── OTP MODAL ── */
-.otp-overlay{
-  position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity 0.3s ease;
-}
-.otp-overlay.open{opacity:1;pointer-events:all;}
-.otp-modal{
-  background:var(--bg-3);border:1px solid var(--border-hover);
-  border-radius:24px;padding:2.5rem;width:100%;max-width:380px;text-align:center;
-}
-.otp-icon{font-size:2.5rem;margin-bottom:1rem;}
-.otp-title{font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:0.4rem;}
-.otp-desc{font-size:0.82rem;color:var(--text-2);line-height:1.6;margin-bottom:2rem;}
-.otp-inputs{display:flex;gap:0.6rem;justify-content:center;margin-bottom:1.5rem;}
-.otp-input{
-  width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-display);
-  font-size:1.4rem;font-weight:700;text-align:center;outline:none;
-  transition:border-color var(--transition);
-}
-.otp-input:focus{border-color:var(--gold-border);}
-.otp-btn{
-  width:100%;padding:14px;background:var(--gold);color:#000;
-  font-family:var(--font-display);font-weight:700;font-size:0.85rem;
-  border:none;border-radius:100px;cursor:pointer;transition:all var(--transition);
-}
-.otp-btn:hover{background:#ffc030;}
-.otp-resend{font-size:0.75rem;color:var(--text-3);margin-top:1rem;}
-.otp-resend a{color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-
-/* ── MOBILE ── */
-@media(max-width:768px){
-  .sidebar{transform:translateX(-100%);}
-  .main{margin-left:0;}
-  .page-content{padding:1.5rem;}
-  .form-grid{grid-template-columns:1fr;}
-  .form-group.full{grid-column:1;}
-  .avatar-upload-area{flex-direction:column;align-items:flex-start;}
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .page-content { padding: 1.25rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: 1; }
+  .avatar-upload-area { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+  .danger-item { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
 <div class="app-shell">
 
-<!-- ── SIDEBAR ── -->
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
 <aside class="sidebar">
   <div class="sidebar-top">
     <a href="index.html" class="sidebar-logo">
@@ -354,20 +456,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       CRITERIA
     </a>
   </div>
-
   <div class="sidebar-user">
     <div class="sidebar-avatar-wrap">
-      <div class="sidebar-avatar" id="sb-avatar"><span id="sb-initials">?</span></div>
-      <div>
+      <div class="sidebar-avatar" id="sb-avatar">
+        <span id="sb-initials">?</span>
+      </div>
+      <div style="min-width:0;">
         <div class="sidebar-user-name" id="sb-name">Loading...</div>
         <div class="sidebar-user-email" id="sb-email">—</div>
       </div>
     </div>
   </div>
-
   <nav class="sidebar-nav">
     <div class="nav-section-label">Account</div>
-    <div class="nav-item active" onclick="location.href='profile.html'">
+    <div class="nav-item active">
       <span class="nav-icon">◎</span> Profile Settings
     </div>
     <div class="nav-item" onclick="location.href='settings.html'">
@@ -375,7 +477,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
     </div>
     <div class="nav-section-label">Studio</div>
     <div class="nav-item" onclick="location.href='dashboard.html'">
-      <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span> Dashboard
+      <span class="nav-icon">▦</span> Dashboard
     </div>
     <div class="nav-item" onclick="location.href='index.html#request'">
       <span class="nav-icon">＋</span> New Project
@@ -384,20 +486,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       <span class="nav-icon">⌂</span> Back to Site
     </div>
   </nav>
-
   <div class="sidebar-bottom">
-    <div class="nav-item" id="signout-btn" style="color:var(--error);" onclick="signOutUser()">
+    <div class="nav-item" style="color:var(--error);" onclick="signOutUser()">
       <span class="nav-icon">→</span> Sign Out
     </div>
   </div>
 </aside>
 
-<!-- ── MAIN ── -->
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
 <main class="main">
   <div class="topbar">
-    <div>
-      <div class="topbar-breadcrumb">Account / <span>Profile Settings</span></div>
-    </div>
+    <div class="topbar-breadcrumb">Account / <span>Profile Settings</span></div>
     <div class="topbar-actions">
       <button class="topbar-btn topbar-btn-secondary" onclick="resetChanges()">Discard</button>
       <button class="topbar-btn topbar-btn-primary" onclick="saveProfile()">Save Changes</button>
@@ -406,7 +507,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 
   <div class="page-content">
 
-    <!-- PROFILE PHOTO -->
+    <!-- ── PROFILE PHOTO ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
@@ -416,25 +517,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       </div>
       <div class="section-body">
         <div class="avatar-upload-area">
-          <div class="avatar-large" id="main-avatar" onclick="document.getElementById('avatar-file-input').click()">
-            <span id="avatar-initials">?</span>
+          <div class="avatar-large" id="main-avatar"
+               onclick="document.getElementById('avatar-file-input').click()">
+            <span class="avatar-initials-text" id="avatar-initials">?</span>
             <div class="avatar-overlay">✎</div>
           </div>
           <div>
             <div class="avatar-actions">
-              <button class="avatar-btn avatar-btn-upload" onclick="document.getElementById('avatar-file-input').click()">
+              <button class="avatar-btn avatar-btn-upload"
+                      onclick="document.getElementById('avatar-file-input').click()">
                 ↑ Upload Photo
               </button>
-              <button class="avatar-btn avatar-btn-remove" onclick="removeAvatar()">Remove Photo</button>
+              <button class="avatar-btn avatar-btn-remove" onclick="removeAvatar()">
+                Remove Photo
+              </button>
             </div>
-            <div class="avatar-hint">JPG, PNG or WEBP · Max 5MB · Will be cropped to circle</div>
+            <div class="avatar-hint">JPG, PNG or WEBP · Max 5 MB · Cropped to circle</div>
           </div>
         </div>
-        <input type="file" id="avatar-file-input" accept="image/*" onchange="openCropModal(event)"/>
+        <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp"
+               onchange="openCropModal(event)"/>
       </div>
     </div>
 
-    <!-- PERSONAL INFO -->
+    <!-- ── PERSONAL INFO ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
@@ -446,41 +552,46 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">First Name <span class="req">*</span></label>
-            <input type="text" class="form-input" id="f-firstname" placeholder="e.g. Arjun"/>
+            <input type="text" class="form-input" id="f-firstname" placeholder="e.g. Arjun"
+                   autocomplete="given-name"/>
           </div>
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input type="text" class="form-input" id="f-lastname" placeholder="e.g. Sharma"/>
+            <input type="text" class="form-input" id="f-lastname" placeholder="e.g. Sharma"
+                   autocomplete="family-name"/>
           </div>
           <div class="form-group full">
             <label class="form-label">Display Name</label>
-            <input type="text" class="form-input" id="f-displayname" placeholder="How your name appears publicly"/>
+            <input type="text" class="form-input" id="f-displayname"
+                   placeholder="How your name appears publicly"/>
             <span class="form-hint">This is what clients and the team will see</span>
           </div>
           <div class="form-group full">
             <label class="form-label">Bio</label>
-            <input type="text" class="form-input" id="f-bio" placeholder="Short description about you (optional)"/>
+            <input type="text" class="form-input" id="f-bio"
+                   placeholder="Short description about you (optional)" maxlength="120"/>
           </div>
           <div class="form-group">
             <label class="form-label">Date of Birth <span class="req">*</span></label>
-            <input type="date" class="form-input" id="f-dob" style="color-scheme:dark;"/>
+            <input type="date" class="form-input" id="f-dob"
+                   style="color-scheme:dark;" autocomplete="bday"/>
             <span class="form-hint" id="dob-hint">Must be 12 years or older</span>
           </div>
           <div class="form-group">
             <label class="form-label">Gender</label>
             <select class="form-select" id="f-gender">
               <option value="">Prefer not to say</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Non-binary</option>
-              <option>Other</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="nonbinary">Non-binary</option>
+              <option value="other">Other</option>
             </select>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CONTACT INFO -->
+    <!-- ── CONTACT INFO ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
@@ -493,13 +604,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
           <div class="form-group full">
             <label class="form-label">Email Address <span class="req">*</span></label>
             <div class="form-input-wrap">
-              <input type="email" class="form-input" id="f-email" placeholder="your@email.com"/>
-              <span class="input-icon" id="email-icon"></span>
+              <input type="email" class="form-input" id="f-email"
+                     placeholder="your@email.com" autocomplete="email" readonly/>
+              <span class="input-status-icon" id="email-icon"></span>
             </div>
             <div class="verify-row">
               <div class="verify-badge unverified" id="email-verify-badge">✕ Not Verified</div>
-              <span class="verify-link" id="email-verify-link" onclick="sendEmailVerification()">Send verification email</span>
+              <span class="verify-link" id="email-verify-link"
+                    onclick="openVerifyModal()">Send verification email</span>
             </div>
+            <span class="form-hint">Email is managed by your sign-in provider</span>
           </div>
           <div class="form-group full">
             <label class="form-label">Phone Number</label>
@@ -511,25 +625,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
                 <option value="+971">🇦🇪 +971</option>
                 <option value="+61">🇦🇺 +61</option>
                 <option value="+49">🇩🇪 +49</option>
+                <option value="+65">🇸🇬 +65</option>
               </select>
-              <input type="tel" class="form-input" id="f-phone" placeholder="9876543210" style="flex:1;"/>
+              <input type="tel" class="form-input" id="f-phone"
+                     placeholder="9876543210" style="flex:1;"
+                     autocomplete="tel-national" maxlength="15"/>
             </div>
-            <span class="form-hint">Used only for project updates, never shared</span>
+            <span class="form-hint">Used only for project updates — never shared publicly</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- LINKED ACCOUNTS -->
+    <!-- ── LINKED ACCOUNTS ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
           <div class="section-title">Linked Accounts</div>
-          <div class="section-subtitle">Connect external accounts for faster sign-in</div>
+          <div class="section-subtitle">Connect external accounts for faster sign-in and verification</div>
         </div>
       </div>
       <div class="section-body">
         <div class="linked-list">
+
+          <!-- Google -->
           <div class="linked-item" id="google-linked-item">
             <div class="linked-icon" style="background:#fff1f0;">
               <svg width="20" height="20" viewBox="0 0 48 48">
@@ -543,11 +662,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
               <div class="linked-name">Google</div>
               <div class="linked-status" id="google-linked-status">Checking...</div>
             </div>
-            <button class="linked-action" id="google-linked-btn" onclick="toggleGoogleLink()">—</button>
+            <button class="linked-action" id="google-linked-btn"
+                    onclick="toggleGoogleLink()">—</button>
           </div>
 
+          <!-- GitHub (coming) -->
           <div class="linked-item">
-            <div class="linked-icon" style="background:#f0f4ff;">
+            <div class="linked-icon" style="background:#f0f0f0;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F172A">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
               </svg>
@@ -556,13 +677,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
               <div class="linked-name">GitHub</div>
               <div class="linked-status">Not connected</div>
             </div>
-            <button class="linked-action connect">Connect</button>
+            <button class="linked-action connect"
+                    onclick="showToast('GitHub linking coming soon','')">Connect</button>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- DANGER ZONE -->
+    <!-- ── DANGER ZONE ── -->
     <div class="settings-section danger-zone">
       <div class="section-header">
         <div>
@@ -574,14 +697,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
         <div class="danger-item">
           <div>
             <div class="danger-label">Change Password</div>
-            <div class="danger-desc">Send a password reset link to your email</div>
+            <div class="danger-desc">Send a password reset link to your registered email</div>
           </div>
-          <button class="danger-btn" onclick="sendPasswordReset()">Reset Password</button>
+          <button class="danger-btn" onclick="doPasswordReset()">Reset Password</button>
         </div>
         <div class="danger-item">
           <div>
             <div class="danger-label">Delete Account</div>
-            <div class="danger-desc">Permanently delete your account and all project data</div>
+            <div class="danger-desc">Permanently delete your account and all associated data</div>
           </div>
           <button class="danger-btn" onclick="confirmDelete()">Delete Account</button>
         </div>
@@ -590,19 +713,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 
   </div><!-- /page-content -->
 </main>
-</div>
+</div><!-- /app-shell -->
 
-<!-- ── CROP MODAL ── -->
+<!-- ══════════════════════════════════════════
+     CROP MODAL
+══════════════════════════════════════════ -->
 <div class="crop-overlay" id="crop-overlay">
   <div class="crop-modal">
     <div class="crop-title">Crop Profile Photo</div>
-    <div class="crop-sub">Drag to reposition · Scroll or use slider to zoom</div>
+    <div class="crop-sub">Drag to reposition · Zoom slider to scale</div>
     <div class="crop-canvas-wrap" id="crop-wrap">
-      <img id="crop-image" src="" alt="crop" draggable="false"/>
+      <div class="crop-circle-mask"></div>
+      <div class="crop-circle-guide"></div>
+      <img id="crop-image" src="" alt="crop preview" draggable="false"/>
     </div>
     <div class="crop-controls">
-      <div class="crop-slider-label"><span>Zoom</span><span id="zoom-val">100%</span></div>
-      <input type="range" class="crop-slider" id="zoom-slider" min="100" max="300" value="100" oninput="updateZoom(this.value)"/>
+      <div class="crop-slider-label">
+        <span>Zoom</span><span id="zoom-val">1.0×</span>
+      </div>
+      <input type="range" class="crop-slider" id="zoom-slider"
+             min="100" max="300" value="100" oninput="updateZoom(this.value)"/>
     </div>
     <div class="crop-actions">
       <button class="crop-btn crop-btn-cancel" onclick="closeCropModal()">Cancel</button>
@@ -611,141 +741,170 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   </div>
 </div>
 
-<!-- ── OTP MODAL ── -->
+<!-- ══════════════════════════════════════════
+     EMAIL VERIFICATION MODAL
+══════════════════════════════════════════ -->
 <div class="otp-overlay" id="otp-overlay">
   <div class="otp-modal">
     <div class="otp-icon">✉️</div>
     <div class="otp-title">Verify your email</div>
-    <div class="otp-desc" id="otp-desc">Enter the 6-digit code sent to <strong id="otp-target-email"></strong></div>
-    <div class="otp-inputs">
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,0)"/>
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,1)"/>
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,2)"/>
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,3)"/>
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,4)"/>
-      <input class="otp-input" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,5)"/>
+    <div class="otp-desc">
+      We'll send a verification link to<br>
+      <strong id="otp-target-email"></strong>
     </div>
-    <button class="otp-btn" onclick="verifyOtp()">Verify Email</button>
-    <div class="otp-resend">Didn't get it? <a onclick="sendEmailVerification()">Resend code</a></div>
+    <div class="otp-note">
+      Click <span>Send</span> below and then open the email from CRITERIA.
+      Click the verification link inside it — your email will be marked verified instantly.
+    </div>
+    <button class="otp-btn" id="otp-send-btn" onclick="sendVerificationEmail()">
+      Send Verification Email
+    </button>
+    <button class="otp-btn-secondary" onclick="closeVerifyModal()">Cancel</button>
+    <div class="otp-resend">Already sent? <a onclick="refreshVerification()">Check now</a></div>
   </div>
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- ══════════════════════════════════════════
+     FIREBASE + LOGIC
+══════════════════════════════════════════ -->
 <script type="module">
-// ════════════════════════════════════════
-// FIREBASE CONFIG
-// ✏️ CHANGE THIS → paste your Firebase keys
-// ════════════════════════════════════════
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { initializeApp }          from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
-  getAuth, onAuthStateChanged, signOut,
+  getAuth, onAuthStateChanged, signOut, reload,
   GoogleAuthProvider, linkWithPopup, unlink,
-  sendEmailVerification, sendPasswordReset,
-  updateProfile, updateEmail, deleteUser
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  updateProfile, deleteUser
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
   getFirestore, doc, getDoc, setDoc
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {
-  getStorage, ref, uploadString, getDownloadURL, deleteObject
+  getStorage, ref as storageRef,
+  uploadString, getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 
+// ════════════════════════════════════════
+// ✏️ CHANGE THIS → your Firebase config
+// ════════════════════════════════════════
 const firebaseConfig = {
-  apiKey:            "REPLACE_WITH_YOUR_API_KEY",            // ✏️ CHANGE THIS
-  authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",        // ✏️ CHANGE THIS
-  projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",         // ✏️ CHANGE THIS
-  storageBucket:     "REPLACE_WITH_YOUR_STORAGE_BUCKET",     // ✏️ CHANGE THIS
-  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",          // ✏️ CHANGE THIS
-  appId:             "REPLACE_WITH_YOUR_APP_ID"              // ✏️ CHANGE THIS
+  apiKey:            "AIzaSyC5PXHOl3UYhsWImZBKXYXbikYASWVC-7Y",
+  authDomain:        "criteria-18e9d.firebaseapp.com",
+  projectId:         "criteria-18e9d",
+  storageBucket:     "criteria-18e9d.firebasestorage.app",
+  messagingSenderId: "427729441325",
+  appId:             "1:427729441325:web:43a77167bd1f9fc5c65ea4"
 };
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const app     = initializeApp(firebaseConfig);
+const auth    = getAuth(app);
+const db      = getFirestore(app);
 const storage = getStorage(app);
 
-let currentUser = null;
+let currentUser   = null;
 let croppedDataUrl = null;
-let cropScale = 1;
-let cropOffsetX = 0, cropOffsetY = 0;
+
+// crop state
+let cropScale = 1, cropOffsetX = 0, cropOffsetY = 0;
 let isDragging = false, dragStartX = 0, dragStartY = 0;
 
-// ── AUTH GUARD ──
+// ─────────────────────────────
+// AUTH GUARD
+// ─────────────────────────────
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
-  populateUserUI(user);
-  await loadFirestoreProfile(user);
-  checkEmailVerification(user);
-  checkLinkedProviders(user);
+  populateSidebar(user);
+  populateForm(user);
+  await loadFirestoreData(user.uid);
+  updateEmailVerificationUI(user);
+  updateLinkedAccounts(user);
+  setMaxDOB();
 });
 
-function populateUserUI(user) {
-  const name     = user.displayName || 'User';
-  const email    = user.email || '';
-  const photoURL = user.photoURL;
+// ─────────────────────────────
+// POPULATE UI
+// ─────────────────────────────
+function populateSidebar(user) {
+  const name   = user.displayName || 'User';
+  const email  = user.email || '';
+  const photo  = user.photoURL;
+  const init   = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
 
   document.getElementById('sb-name').textContent  = name;
   document.getElementById('sb-email').textContent = email;
-  document.getElementById('f-email').value        = email;
 
-  const parts = name.trim().split(' ');
-  document.getElementById('f-firstname').value    = parts[0] || '';
-  document.getElementById('f-lastname').value     = parts.slice(1).join(' ') || '';
-  document.getElementById('f-displayname').value  = name;
-
-  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('avatar-initials').textContent = initials;
-  document.getElementById('sb-initials').textContent     = initials;
-
-  if (photoURL) {
-    setAvatarImage(photoURL);
-    setSidebarAvatar(photoURL);
+  const sbAvatar = document.getElementById('sb-avatar');
+  if (photo) {
+    sbAvatar.innerHTML = `<img src="${photo}" alt="avatar"/>`;
+  } else {
+    sbAvatar.innerHTML = `<span>${init}</span>`;
   }
 }
 
-async function loadFirestoreProfile(user) {
-  // Load extra fields from Firestore (phone, dob, bio, gender)
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (snap.exists()) {
-      const d = snap.data();
-      if (d.phone)   document.getElementById('f-phone').value  = d.phone;
-      if (d.dob)     document.getElementById('f-dob').value    = d.dob;
-      if (d.bio)     document.getElementById('f-bio').value    = d.bio;
-      if (d.gender)  document.getElementById('f-gender').value = d.gender;
-      if (d.phoneCode) document.getElementById('f-phone-code').value = d.phoneCode;
-    }
-  } catch(e) { /* Firestore not configured yet */ }
+function populateForm(user) {
+  const name  = user.displayName || '';
+  const parts = name.trim().split(' ');
+
+  document.getElementById('f-firstname').value   = parts[0] || '';
+  document.getElementById('f-lastname').value    = parts.slice(1).join(' ') || '';
+  document.getElementById('f-displayname').value = name;
+  document.getElementById('f-email').value       = user.email || '';
+
+  // Set avatar preview
+  const init = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || '?';
+  if (user.photoURL) {
+    setMainAvatarImage(user.photoURL);
+  } else {
+    document.getElementById('avatar-initials').textContent = init;
+  }
 }
 
-function checkEmailVerification(user) {
+async function loadFirestoreData(uid) {
+  try {
+    const snap = await getDoc(doc(db, 'users', uid));
+    if (!snap.exists()) return;
+    const d = snap.data();
+    if (d.phone)     document.getElementById('f-phone').value      = d.phone;
+    if (d.phoneCode) document.getElementById('f-phone-code').value = d.phoneCode;
+    if (d.dob)       { document.getElementById('f-dob').value = d.dob; validateDOB(d.dob); }
+    if (d.bio)       document.getElementById('f-bio').value        = d.bio;
+    if (d.gender)    document.getElementById('f-gender').value     = d.gender;
+  } catch(e) { /* Firestore not wired yet — silent */ }
+}
+
+function updateEmailVerificationUI(user) {
   const badge = document.getElementById('email-verify-badge');
   const link  = document.getElementById('email-verify-link');
   const icon  = document.getElementById('email-icon');
+
   if (user.emailVerified) {
-    badge.className = 'verify-badge verified';
+    badge.className   = 'verify-badge verified';
     badge.textContent = '✓ Verified';
     link.style.display = 'none';
-    icon.textContent = '✓';
-    icon.style.color = 'var(--success)';
-    document.getElementById('f-email').classList.add('verified');
+    icon.textContent   = '✓';
+    icon.style.color   = 'var(--success)';
+    document.getElementById('f-email').classList.add('email-verified');
   } else {
-    badge.className = 'verify-badge unverified';
+    badge.className   = 'verify-badge unverified';
     badge.textContent = '✕ Not Verified';
     link.style.display = '';
-    icon.textContent = '!';
-    icon.style.color = 'var(--error)';
+    icon.textContent   = '!';
+    icon.style.color   = 'var(--error)';
+    document.getElementById('f-email').classList.remove('email-verified');
   }
 }
 
-function checkLinkedProviders(user) {
+function updateLinkedAccounts(user) {
   const providers = user.providerData.map(p => p.providerId);
   const isGoogle  = providers.includes('google.com');
   const item      = document.getElementById('google-linked-item');
   const status    = document.getElementById('google-linked-status');
   const btn       = document.getElementById('google-linked-btn');
+
   if (isGoogle) {
     item.classList.add('connected');
     status.textContent = '✓ Connected — ' + (user.email || '');
@@ -753,74 +912,95 @@ function checkLinkedProviders(user) {
     btn.textContent    = 'Disconnect';
     btn.className      = 'linked-action disconnect';
   } else {
+    item.classList.remove('connected');
     status.textContent = 'Not connected';
+    status.className   = 'linked-status';
     btn.textContent    = 'Connect';
     btn.className      = 'linked-action connect';
   }
 }
 
-// ── SAVE PROFILE ──
+// ─────────────────────────────
+// SAVE PROFILE
+// ─────────────────────────────
 window.saveProfile = async function() {
+  if (!currentUser) return;
+
   const dob = document.getElementById('f-dob').value;
-  if (dob) {
-    const age = getAge(dob);
-    if (age < 12) { showToast('You must be at least 12 years old.', 'error'); return; }
+  if (dob && getAge(dob) < 12) {
+    showToast('You must be at least 12 years old.', 'error'); return;
   }
 
-  const displayName = document.getElementById('f-displayname').value.trim()
-    || document.getElementById('f-firstname').value.trim();
+  const firstName   = document.getElementById('f-firstname').value.trim();
+  const lastName    = document.getElementById('f-lastname').value.trim();
+  const displayName = document.getElementById('f-displayname').value.trim() || firstName;
+
+  if (!firstName) { showToast('First name is required.', 'error'); return; }
+
+  const btn = document.querySelector('.topbar-btn-primary');
+  btn.textContent = 'Saving...'; btn.disabled = true;
 
   try {
-    // Update Firebase Auth profile
-    await updateProfile(currentUser, { displayName });
+    let photoURL = currentUser.photoURL;
 
-    // Update Firestore extra fields
-    await setDoc(doc(db, 'users', currentUser.uid), {
-      firstName:  document.getElementById('f-firstname').value.trim(),
-      lastName:   document.getElementById('f-lastname').value.trim(),
-      displayName,
-      bio:        document.getElementById('f-bio').value.trim(),
-      dob:        dob,
-      gender:     document.getElementById('f-gender').value,
-      phone:      document.getElementById('f-phone').value.trim(),
-      phoneCode:  document.getElementById('f-phone-code').value,
-      updatedAt:  new Date().toISOString()
-    }, { merge: true });
-
-    // Upload avatar if changed
+    // Upload cropped avatar if changed
     if (croppedDataUrl) {
-      const storageRef = ref(storage, `avatars/${currentUser.uid}`);
-      await uploadString(storageRef, croppedDataUrl, 'data_url');
-      const url = await getDownloadURL(storageRef);
-      await updateProfile(currentUser, { photoURL: url });
+      const sRef = storageRef(storage, `avatars/${currentUser.uid}`);
+      await uploadString(sRef, croppedDataUrl, 'data_url');
+      photoURL = await getDownloadURL(sRef);
       croppedDataUrl = null;
     }
 
-    showToast('Profile saved successfully!', 'success');
-    populateUserUI(currentUser);
+    // Update Firebase Auth display name & photo
+    await updateProfile(currentUser, { displayName, photoURL });
+
+    // Save extra fields to Firestore
+    await setDoc(doc(db, 'users', currentUser.uid), {
+      firstName, lastName, displayName,
+      bio:       document.getElementById('f-bio').value.trim(),
+      dob,
+      gender:    document.getElementById('f-gender').value,
+      phone:     document.getElementById('f-phone').value.trim(),
+      phoneCode: document.getElementById('f-phone-code').value,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+
+    showToast('Profile saved!', 'success');
+    populateSidebar(currentUser);
   } catch(e) {
-    showToast(e.message, 'error');
+    showToast(e.message || 'Save failed.', 'error');
+  } finally {
+    btn.textContent = 'Save Changes'; btn.disabled = false;
   }
 };
 
 window.resetChanges = function() {
-  if (currentUser) populateUserUI(currentUser);
-  showToast('Changes discarded');
+  if (currentUser) { populateForm(currentUser); loadFirestoreData(currentUser.uid); }
+  croppedDataUrl = null;
+  showToast('Changes discarded.');
 };
 
-// ── AGE CHECK ──
+// ─────────────────────────────
+// DOB VALIDATION
+// ─────────────────────────────
+function setMaxDOB() {
+  const dob = document.getElementById('f-dob');
+  const max = new Date();
+  max.setFullYear(max.getFullYear() - 12);
+  dob.max = max.toISOString().split('T')[0];
+}
+
 function getAge(dob) {
-  const today = new Date();
-  const birth = new Date(dob);
+  const today = new Date(), birth = new Date(dob);
   let age = today.getFullYear() - birth.getFullYear();
   if (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate())) age--;
   return age;
 }
 
-document.getElementById('f-dob').addEventListener('change', function() {
+function validateDOB(val) {
   const hint = document.getElementById('dob-hint');
-  if (!this.value) return;
-  const age = getAge(this.value);
+  if (!val) return;
+  const age = getAge(val);
   if (age < 12) {
     hint.textContent = '✕ Must be 12 years or older';
     hint.className   = 'form-hint error';
@@ -828,115 +1008,167 @@ document.getElementById('f-dob').addEventListener('change', function() {
     hint.textContent = `✓ Age: ${age}`;
     hint.className   = 'form-hint success';
   }
-  // Block future dates
-  const maxDate = new Date();
-  maxDate.setFullYear(maxDate.getFullYear() - 12);
-  this.max = maxDate.toISOString().split('T')[0];
+}
+
+document.getElementById('f-dob').addEventListener('change', function() {
+  validateDOB(this.value);
 });
 
-// Set max date on load
-window.addEventListener('DOMContentLoaded', () => {
-  const dob = document.getElementById('f-dob');
-  const max = new Date();
-  max.setFullYear(max.getFullYear() - 12);
-  dob.max = max.toISOString().split('T')[0];
-});
+// ─────────────────────────────
+// EMAIL VERIFICATION
+// ─────────────────────────────
+window.openVerifyModal = function() {
+  document.getElementById('otp-target-email').textContent = currentUser?.email || '';
+  document.getElementById('otp-overlay').classList.add('open');
+};
 
-// ── EMAIL VERIFICATION ──
-window.sendEmailVerification = async function() {
+window.closeVerifyModal = function() {
+  document.getElementById('otp-overlay').classList.remove('open');
+};
+
+window.sendVerificationEmail = async function() {
+  const btn = document.getElementById('otp-send-btn');
+  btn.textContent = 'Sending...'; btn.disabled = true;
   try {
     await sendEmailVerification(currentUser);
-    document.getElementById('otp-target-email').textContent = currentUser.email;
-    document.getElementById('otp-overlay').classList.add('open');
+    btn.textContent = '✓ Email Sent — Check your inbox';
     showToast('Verification email sent!', 'success');
-  } catch(e) { showToast(e.message, 'error'); }
-};
-
-window.verifyOtp = function() {
-  // In production: validate OTP via Firebase/backend
-  // For now we close and prompt user to click email link
-  document.getElementById('otp-overlay').classList.remove('open');
-  showToast('Check your email and click the verification link.', 'success');
-};
-
-window.otpNext = function(el, idx) {
-  el.value = el.value.replace(/\D/,'');
-  const inputs = document.querySelectorAll('.otp-input');
-  if (el.value && idx < 5) inputs[idx+1].focus();
-};
-
-// ── GOOGLE LINK/UNLINK ──
-window.toggleGoogleLink = async function() {
-  const providers = currentUser.providerData.map(p => p.providerId);
-  try {
-    if (providers.includes('google.com')) {
-      await unlink(currentUser, 'google.com');
-      showToast('Google account disconnected');
-    } else {
-      await linkWithPopup(currentUser, new GoogleAuthProvider());
-      showToast('Google account connected!', 'success');
-    }
-    checkLinkedProviders(currentUser);
-  } catch(e) { showToast(e.message, 'error'); }
-};
-
-// ── PASSWORD RESET ──
-window.sendPasswordReset = async function() {
-  try {
-    const { sendPasswordResetEmail } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-    await sendPasswordResetEmail(auth, currentUser.email);
-    showToast('Password reset email sent!', 'success');
-  } catch(e) { showToast(e.message, 'error'); }
-};
-
-// ── DELETE ACCOUNT ──
-window.confirmDelete = function() {
-  if (confirm('Are you absolutely sure? This cannot be undone.')) {
-    deleteUser(currentUser)
-      .then(() => { window.location.href = 'index.html'; })
-      .catch(e => showToast(e.message, 'error'));
+  } catch(e) {
+    showToast(e.message || 'Could not send email.', 'error');
+    btn.textContent = 'Send Verification Email'; btn.disabled = false;
   }
 };
 
-// ── SIGN OUT ──
+// After clicking the link in email, user comes back and can refresh
+window.refreshVerification = async function() {
+  try {
+    await reload(currentUser);
+    updateEmailVerificationUI(currentUser);
+    if (currentUser.emailVerified) {
+      closeVerifyModal();
+      showToast('Email verified successfully!', 'success');
+    } else {
+      showToast('Not verified yet — check your inbox.', '');
+    }
+  } catch(e) { showToast(e.message, 'error'); }
+};
+
+// ─────────────────────────────
+// GOOGLE LINK / UNLINK
+// ─────────────────────────────
+window.toggleGoogleLink = async function() {
+  if (!currentUser) return;
+  const providers = currentUser.providerData.map(p => p.providerId);
+  try {
+    if (providers.includes('google.com')) {
+      if (providers.length === 1) {
+        showToast('Add a password before removing Google — otherwise you can\'t sign in.', 'error');
+        return;
+      }
+      await unlink(currentUser, 'google.com');
+      showToast('Google account disconnected.');
+    } else {
+      await linkWithPopup(currentUser, new GoogleAuthProvider());
+      showToast('Google account linked!', 'success');
+    }
+    updateLinkedAccounts(currentUser);
+  } catch(e) {
+    if (e.code === 'auth/credential-already-in-use') {
+      showToast('This Google account is already linked to another user.', 'error');
+    } else {
+      showToast(e.message, 'error');
+    }
+  }
+};
+
+// ─────────────────────────────
+// PASSWORD RESET
+// ─────────────────────────────
+window.doPasswordReset = async function() {
+  if (!currentUser?.email) return;
+  try {
+    await sendPasswordResetEmail(auth, currentUser.email);
+    showToast('Password reset email sent to ' + currentUser.email, 'success');
+  } catch(e) { showToast(e.message, 'error'); }
+};
+
+// ─────────────────────────────
+// DELETE ACCOUNT
+// ─────────────────────────────
+window.confirmDelete = function() {
+  const confirmed = confirm(
+    'Are you absolutely sure?\n\nThis will permanently delete your CRITERIA account and all project data. This cannot be undone.'
+  );
+  if (!confirmed) return;
+  deleteUser(currentUser)
+    .then(() => { window.location.href = 'index.html'; })
+    .catch(e => {
+      if (e.code === 'auth/requires-recent-login') {
+        showToast('Please sign out and sign back in before deleting your account.', 'error');
+      } else {
+        showToast(e.message, 'error');
+      }
+    });
+};
+
+// ─────────────────────────────
+// SIGN OUT
+// ─────────────────────────────
 window.signOutUser = async function() {
   await signOut(auth);
   window.location.href = 'index.html';
 };
 
-// ── AVATAR HELPERS ──
-function setAvatarImage(url) {
+// ─────────────────────────────
+// AVATAR HELPERS
+// ─────────────────────────────
+function setMainAvatarImage(url) {
   const el = document.getElementById('main-avatar');
-  el.innerHTML = `<img src="${url}" alt="avatar"/><div class="avatar-overlay">✎</div>`;
+  el.innerHTML = `
+    <img src="${url}" alt="profile photo"/>
+    <div class="avatar-overlay">✎</div>
+  `;
   el.onclick = () => document.getElementById('avatar-file-input').click();
 }
-function setSidebarAvatar(url) {
+
+function setSidebarAvatarImage(url) {
   const el = document.getElementById('sb-avatar');
   el.innerHTML = `<img src="${url}" alt="avatar"/>`;
 }
+
 window.removeAvatar = function() {
-  document.getElementById('main-avatar').innerHTML =
-    `<span id="avatar-initials">${document.getElementById('f-firstname').value[0]||'?'}</span><div class="avatar-overlay">✎</div>`;
-  document.getElementById('main-avatar').onclick = () => document.getElementById('avatar-file-input').click();
   croppedDataUrl = null;
-  showToast('Photo removed');
+  const init = (document.getElementById('f-firstname').value[0] || '?').toUpperCase();
+  const el   = document.getElementById('main-avatar');
+  el.innerHTML = `
+    <span class="avatar-initials-text" id="avatar-initials">${init}</span>
+    <div class="avatar-overlay">✎</div>
+  `;
+  el.onclick = () => document.getElementById('avatar-file-input').click();
+  showToast('Photo removed — save profile to apply.');
 };
 
-// ── CROP MODAL ──
+// ─────────────────────────────
+// CROP MODAL
+// ─────────────────────────────
 window.openCropModal = function(e) {
   const file = e.target.files[0];
   if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('File is too large. Max 5 MB.', 'error'); return;
+  }
   const reader = new FileReader();
   reader.onload = ev => {
-    document.getElementById('crop-image').src = ev.target.result;
+    const img = document.getElementById('crop-image');
+    img.src = ev.target.result;
     cropScale = 1; cropOffsetX = 0; cropOffsetY = 0;
     document.getElementById('zoom-slider').value = 100;
-    document.getElementById('zoom-val').textContent = '100%';
+    document.getElementById('zoom-val').textContent = '1.0×';
     applyTransform();
     document.getElementById('crop-overlay').classList.add('open');
   };
   reader.readAsDataURL(file);
-  e.target.value = '';
+  e.target.value = ''; // reset so same file can be re-selected
 };
 
 window.closeCropModal = function() {
@@ -945,7 +1177,7 @@ window.closeCropModal = function() {
 
 window.updateZoom = function(val) {
   cropScale = val / 100;
-  document.getElementById('zoom-val').textContent = val + '%';
+  document.getElementById('zoom-val').textContent = cropScale.toFixed(1) + '×';
   applyTransform();
 };
 
@@ -954,7 +1186,7 @@ function applyTransform() {
     `translate(${cropOffsetX}px, ${cropOffsetY}px) scale(${cropScale})`;
 }
 
-// Drag to reposition
+// Mouse drag
 const cropImg = document.getElementById('crop-image');
 cropImg.addEventListener('mousedown', e => {
   isDragging = true;
@@ -975,53 +1207,56 @@ cropImg.addEventListener('touchstart', e => {
   isDragging = true;
   dragStartX = e.touches[0].clientX - cropOffsetX;
   dragStartY = e.touches[0].clientY - cropOffsetY;
-},{passive:true});
+}, { passive: true });
 document.addEventListener('touchmove', e => {
   if (!isDragging) return;
   cropOffsetX = e.touches[0].clientX - dragStartX;
   cropOffsetY = e.touches[0].clientY - dragStartY;
   applyTransform();
-},{passive:true});
+}, { passive: true });
 document.addEventListener('touchend', () => { isDragging = false; });
 
 window.applyCrop = function() {
   const canvas = document.createElement('canvas');
-  const size = 400;
-  canvas.width = canvas.height = size;
+  const SIZE   = 400;
+  canvas.width = canvas.height = SIZE;
   const ctx = canvas.getContext('2d');
 
-  // Circle clip
+  // Clip to circle
   ctx.beginPath();
-  ctx.arc(size/2, size/2, size/2, 0, Math.PI*2);
+  ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2, 0, Math.PI * 2);
   ctx.clip();
 
-  const img = document.getElementById('crop-image');
-  const wrap = document.getElementById('crop-wrap');
+  const img      = document.getElementById('crop-image');
+  const wrap     = document.getElementById('crop-wrap');
   const wrapSize = wrap.offsetWidth;
+  const ratio    = SIZE / wrapSize;
 
-  const scale = cropScale * (size / wrapSize);
-  const dx = (size/2) + cropOffsetX * (size/wrapSize);
-  const dy = (size/2) + cropOffsetY * (size/wrapSize);
+  const dx = SIZE / 2 + cropOffsetX * ratio;
+  const dy = SIZE / 2 + cropOffsetY * ratio;
+  const sc = cropScale * ratio;
 
   ctx.save();
   ctx.translate(dx, dy);
-  ctx.scale(scale, scale);
-  ctx.drawImage(img, -img.naturalWidth/2, -img.naturalHeight/2);
+  ctx.scale(sc, sc);
+  ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
   ctx.restore();
 
   croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
-  setAvatarImage(croppedDataUrl);
-  setSidebarAvatar(croppedDataUrl);
+  setMainAvatarImage(croppedDataUrl);
+  setSidebarAvatarImage(croppedDataUrl);
   closeCropModal();
-  showToast('Photo cropped — save profile to apply');
+  showToast('Photo cropped — click Save Changes to apply.');
 };
 
-// ── TOAST ──
-window.showToast = function(msg, type='') {
+// ─────────────────────────────
+// TOAST
+// ─────────────────────────────
+window.showToast = function(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className   = `toast show ${type}`;
-  setTimeout(() => t.className = 'toast', 3500);
+  t.className   = `toast show ${type}`.trim();
+  setTimeout(() => { t.className = 'toast'; }, 3800);
 };
 </script>
 </body>

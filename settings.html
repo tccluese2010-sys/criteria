@@ -1,183 +1,361 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Settings — CRITERIA</title>
+<title>Preferences — CRITERIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+
+<!-- Apply saved theme immediately to prevent flash -->
+<script>
+  (function() {
+    const t = localStorage.getItem('criteria-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    const a = localStorage.getItem('criteria-accent');
+    if (a) document.documentElement.style.setProperty('--gold', a);
+  })();
+</script>
+
 <style>
-:root{
-  --gold:#f0a500;--gold-glow:rgba(240,165,0,0.12);--gold-border:rgba(240,165,0,0.25);
-  --bg:#080808;--bg-2:#0f0f0f;--bg-3:#161616;--bg-card:#111111;
-  --text:#f5f5f5;--text-2:#999;--text-3:#555;
-  --border:rgba(255,255,255,0.07);--border-hover:rgba(255,255,255,0.13);
-  --success:#22c55e;--error:#ef4444;
-  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
-  --radius:12px;--radius-sm:8px;--radius-lg:20px;
-  --transition:0.3s cubic-bezier(0.25,0.46,0.45,0.94);
-  --sidebar-w:260px;
-}
-[data-theme="light"]{
-  --bg:#f8f8f6;--bg-2:#f0f0ed;--bg-3:#e8e8e4;--bg-card:#ffffff;
-  --text:#0a0a0a;--text-2:#555;--text-3:#999;
-  --border:rgba(0,0,0,0.08);--border-hover:rgba(0,0,0,0.14);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;transition:background 0.4s ease,color 0.4s ease;}
-::selection{background:var(--gold);color:#000;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--text-3);border-radius:2px;}
-
-.app-shell{display:flex;min-height:100vh;}
-
-/* SIDEBAR — identical to profile.html */
-.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto;transition:background 0.4s ease,border-color 0.4s ease;}
-.sidebar-top{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);}
-.sidebar-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--font-display);font-weight:800;font-size:0.95rem;letter-spacing:0.2em;color:var(--text);}
-.logo-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.6;}}
-.sidebar-user{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
-.sidebar-avatar-wrap{display:flex;align-items:center;gap:0.875rem;}
-.sidebar-avatar{width:42px;height:42px;border-radius:50%;background:var(--gold-glow);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;color:var(--gold);overflow:hidden;flex-shrink:0;}
-.sidebar-avatar img{width:100%;height:100%;object-fit:cover;}
-.sidebar-user-name{font-family:var(--font-display);font-weight:700;font-size:0.88rem;margin-bottom:2px;}
-.sidebar-user-email{font-size:0.72rem;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
-.sidebar-nav{padding:1rem 0.75rem;flex:1;}
-.nav-section-label{font-size:0.62rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);padding:0.5rem 0.75rem;margin-top:0.5rem;}
-.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.75rem;border-radius:var(--radius-sm);text-decoration:none;color:var(--text-2);font-size:0.85rem;transition:all var(--transition);cursor:pointer;border:none;background:none;width:100%;position:relative;}
-.nav-item:hover{color:var(--text);background:var(--bg-3);}
-.nav-item.active{color:var(--gold);background:var(--gold-glow);}
-.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--gold);border-radius:2px;}
-.nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
-.sidebar-bottom{padding:1rem 0.75rem;border-top:1px solid var(--border);}
-
-.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
-.topbar{position:sticky;top:0;z-index:40;padding:0 2.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:background 0.4s ease;}
-[data-theme="light"] .topbar{background:rgba(248,248,246,0.85);}
-.topbar-breadcrumb{font-size:0.78rem;color:var(--text-3);}
-.topbar-breadcrumb span{color:var(--text-2);}
-.page-content{padding:2.5rem;max-width:860px;}
-.settings-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem;transition:background 0.4s ease,border-color 0.4s ease;}
-.section-header{padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.section-title{font-family:var(--font-display);font-weight:700;font-size:0.95rem;margin-bottom:3px;}
-.section-subtitle{font-size:0.78rem;color:var(--text-3);}
-.section-body{padding:2rem;}
-
-/* ── THEME SWITCHER ── */
-.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.theme-card{
-  border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;
-  cursor:pointer;transition:all var(--transition);position:relative;
-  display:flex;flex-direction:column;gap:0.75rem;
-}
-.theme-card:hover{border-color:var(--border-hover);}
-.theme-card.selected{border-color:var(--gold);}
-.theme-card.selected::after{
-  content:'✓';position:absolute;top:10px;right:12px;
-  width:22px;height:22px;background:var(--gold);color:#000;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;font-weight:700;
-}
-.theme-preview{height:80px;border-radius:8px;overflow:hidden;position:relative;}
-.preview-dark{background:linear-gradient(135deg,#080808 0%,#161616 100%);}
-.preview-light{background:linear-gradient(135deg,#f8f8f6 0%,#e8e8e4 100%);}
-.preview-nav{height:16px;margin:6px;border-radius:4px;}
-.preview-dark .preview-nav{background:rgba(255,255,255,0.05);}
-.preview-light .preview-nav{background:rgba(0,0,0,0.06);}
-.preview-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;position:absolute;top:10px;left:10px;}
-.preview-lines{padding:0 6px;display:flex;flex-direction:column;gap:4px;margin-top:8px;}
-.preview-line{height:5px;border-radius:2px;}
-.preview-dark .preview-line{background:rgba(255,255,255,0.07);}
-.preview-light .preview-line{background:rgba(0,0,0,0.08);}
-.preview-line.short{width:60%;}
-.theme-label{font-family:var(--font-display);font-weight:700;font-size:0.85rem;}
-.theme-desc{font-size:0.75rem;color:var(--text-3);}
-
-/* ── ACCENT COLORS ── */
-.accent-row{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;}
-.accent-swatch{
-  width:36px;height:36px;border-radius:50%;cursor:pointer;
-  border:3px solid transparent;transition:all var(--transition);
-  position:relative;
-}
-.accent-swatch:hover{transform:scale(1.1);}
-.accent-swatch.selected{border-color:var(--text);box-shadow:0 0 0 2px var(--bg),0 0 0 4px currentColor;}
-.accent-swatch.selected::after{
-  content:'✓';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;font-weight:700;color:#000;
+/* ══════════════════════════════════════════
+   VARIABLES — DARK (default)
+══════════════════════════════════════════ */
+:root {
+  --gold: #f0a500;
+  --gold-dim: #c98a00;
+  --gold-glow: rgba(240,165,0,0.12);
+  --gold-border: rgba(240,165,0,0.25);
+  --bg: #080808;
+  --bg-2: #0f0f0f;
+  --bg-3: #161616;
+  --bg-card: #111111;
+  --text: #f5f5f5;
+  --text-2: #999;
+  --text-3: #555;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.13);
+  --select-opt-bg: #1a1a1a;
+  --success: #22c55e;
+  --error: #ef4444;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --transition: 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  --sidebar-w: 260px;
 }
 
-/* ── TOGGLE SWITCH ── */
-.pref-list{display:flex;flex-direction:column;gap:0;}
-.pref-item{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0;border-bottom:1px solid var(--border);}
-.pref-item:last-child{border-bottom:none;}
-.pref-left{}
-.pref-label{font-size:0.88rem;font-weight:500;margin-bottom:3px;}
-.pref-desc{font-size:0.75rem;color:var(--text-3);}
-.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-track{
-  position:absolute;inset:0;background:var(--bg-3);border:1px solid var(--border-hover);
-  border-radius:100px;cursor:pointer;transition:background var(--transition);
+/* ══════════════════════════════════════════
+   VARIABLES — LIGHT
+══════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg: #f5f5f2;
+  --bg-2: #eeeeea;
+  --bg-3: #e6e6e2;
+  --bg-card: #ffffff;
+  --text: #0a0a0a;
+  --text-2: #555555;
+  --text-3: #999999;
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.15);
+  --select-opt-bg: #ffffff;
 }
-.toggle input:checked + .toggle-track{background:var(--gold);}
-.toggle-thumb{
-  position:absolute;top:3px;left:3px;width:16px;height:16px;
-  background:#fff;border-radius:50%;transition:transform var(--transition);
-  pointer-events:none;
+
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; min-height: 100vh;
+  transition: background 0.35s ease, color 0.35s ease;
 }
-.toggle input:checked ~ .toggle-thumb{transform:translateX(20px);}
+::selection { background: var(--gold); color: #000; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 2px; }
 
-/* ── LANGUAGE SELECT ── */
-.lang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;}
-.lang-option{
-  border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.7rem;
-  cursor:pointer;transition:all var(--transition);font-size:0.82rem;
-  display:flex;align-items:center;gap:0.5rem;
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.app-shell { display: flex; min-height: 100vh; }
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--bg-2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 50; overflow-y: auto;
+  transition: background var(--transition), border-color var(--transition);
 }
-.lang-option:hover{border-color:var(--border-hover);}
-.lang-option.selected{border-color:var(--gold);background:var(--gold-glow);color:var(--gold);}
-.lang-flag{font-size:1.1rem;}
+.sidebar-top { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--border); }
+.sidebar-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; font-family: var(--font-display);
+  font-weight: 800; font-size: 0.95rem; letter-spacing: 0.2em; color: var(--text);
+}
+.logo-dot {
+  width: 7px; height: 7px; background: var(--gold);
+  border-radius: 50%; animation: pulse-dot 2.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%     { transform: scale(1.4); opacity: 0.6; }
+}
+.sidebar-user { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.sidebar-avatar-wrap { display: flex; align-items: center; gap: 0.875rem; }
+.sidebar-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold-glow); border: 2px solid var(--gold-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 0.85rem; color: var(--gold); overflow: hidden; flex-shrink: 0;
+}
+.sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sidebar-user-name { font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; margin-bottom: 2px; }
+.sidebar-user-email { font-size: 0.72rem; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.sidebar-nav { padding: 1rem 0.75rem; flex: 1; }
+.nav-section-label {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-3); padding: 0.5rem 0.75rem; margin-top: 0.5rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 0.75rem; border-radius: var(--radius-sm);
+  text-decoration: none; color: var(--text-2); font-size: 0.85rem;
+  transition: all var(--transition); cursor: pointer;
+  border: none; background: none; width: 100%; position: relative;
+}
+.nav-item:hover { color: var(--text); background: var(--bg-3); }
+.nav-item.active { color: var(--gold); background: var(--gold-glow); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 2px; background: var(--gold); border-radius: 2px;
+}
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar-bottom { padding: 1rem 0.75rem; border-top: 1px solid var(--border); }
 
-/* ── NOTIFICATION SECTION ── */
-.notif-grid{display:flex;flex-direction:column;gap:0;}
+/* ══════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════ */
+.main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  padding: 0 2.5rem; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition);
+}
+.topbar-breadcrumb { font-size: 0.78rem; color: var(--text-3); }
+.topbar-breadcrumb span { color: var(--text-2); }
+.topbar-btn {
+  padding: 8px 18px; border-radius: 100px; font-family: var(--font-display);
+  font-weight: 600; font-size: 0.78rem; letter-spacing: 0.06em;
+  border: none; cursor: pointer; transition: all var(--transition);
+}
+.topbar-btn-primary { background: var(--gold); color: #000; }
+.topbar-btn-primary:hover { background: var(--gold-hover); transform: translateY(-1px); }
+.page-content { padding: 2.5rem; max-width: 860px; }
 
-/* ── FORM SELECT ── */
-.form-select{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:0.88rem;padding:10px 14px;outline:none;width:100%;transition:border-color var(--transition);appearance:none;cursor:pointer;color-scheme:dark;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:14px;}
-.form-select option{background:#1a1a1a;}
-.form-select:focus{border-color:var(--gold-border);}
+/* ══════════════════════════════════════════
+   SECTION CARDS
+══════════════════════════════════════════ */
+.settings-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.5rem;
+  transition: background var(--transition), border-color var(--transition);
+}
+.section-header {
+  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+.section-subtitle { font-size: 0.78rem; color: var(--text-3); }
+.section-body { padding: 2rem; }
 
-.topbar-btn{padding:8px 18px;border-radius:100px;font-family:var(--font-display);font-weight:600;font-size:0.78rem;letter-spacing:0.06em;border:none;cursor:pointer;transition:all var(--transition);}
-.topbar-btn-primary{background:var(--gold);color:#000;}
-.topbar-btn-primary:hover{background:#ffc030;}
+/* ══════════════════════════════════════════
+   THEME CARDS
+══════════════════════════════════════════ */
+.theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.theme-card {
+  border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 1.25rem; cursor: pointer; transition: all var(--transition);
+  position: relative; display: flex; flex-direction: column; gap: 0.75rem;
+}
+.theme-card:hover { border-color: var(--border-hover); }
+.theme-card.selected { border-color: var(--gold); }
+.theme-card.selected::after {
+  content: '✓'; position: absolute; top: 10px; right: 12px;
+  width: 22px; height: 22px; background: var(--gold); color: #000;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; line-height: 22px; text-align: center;
+}
+.theme-preview {
+  height: 78px; border-radius: 8px; overflow: hidden;
+  position: relative; border: 1px solid var(--border);
+}
+.preview-dark  { background: linear-gradient(135deg, #080808, #161616); }
+.preview-light { background: linear-gradient(135deg, #f5f5f2, #e6e6e2); }
+.preview-nav {
+  height: 14px; margin: 6px 6px 0;
+  border-radius: 4px; background: rgba(255,255,255,0.05);
+}
+.preview-light .preview-nav { background: rgba(0,0,0,0.06); }
+.preview-dot {
+  width: 5px; height: 5px; background: var(--gold);
+  border-radius: 50%; position: absolute; top: 10px; left: 10px;
+}
+.preview-lines { padding: 6px; display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+.preview-line { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); }
+.preview-light .preview-line { background: rgba(0,0,0,0.08); }
+.preview-line.short { width: 55%; }
+.theme-label { font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+.theme-desc { font-size: 0.75rem; color: var(--text-3); }
 
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-3);border:1px solid var(--border-hover);border-radius:100px;padding:12px 24px;font-size:0.82rem;color:var(--text);opacity:0;transition:all 0.3s ease;z-index:300;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.success{border-color:rgba(34,197,94,0.3);color:#22c55e;}
+/* ══════════════════════════════════════════
+   ACCENT SWATCHES
+══════════════════════════════════════════ */
+.sub-label {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-2); margin-bottom: 0.75rem;
+}
+.accent-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.accent-swatch {
+  width: 36px; height: 36px; border-radius: 50%;
+  cursor: pointer; border: 3px solid transparent;
+  transition: all var(--transition); position: relative;
+}
+.accent-swatch:hover { transform: scale(1.12); }
+.accent-swatch.selected {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text-3);
+}
+.accent-swatch.selected::after {
+  content: '✓'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; color: #000;
+}
 
-@media(max-width:768px){
-  .sidebar{transform:translateX(-100%);}
-  .main{margin-left:0;}
-  .page-content{padding:1.5rem;}
-  .theme-grid{grid-template-columns:1fr;}
-  .lang-grid{grid-template-columns:1fr 1fr;}
+/* ══════════════════════════════════════════
+   LANGUAGE OPTIONS
+══════════════════════════════════════════ */
+.lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.lang-option {
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0.7rem 0.875rem; cursor: pointer;
+  transition: all var(--transition); font-size: 0.82rem;
+  display: flex; align-items: center; gap: 0.6rem; color: var(--text-2);
+}
+.lang-option:hover { border-color: var(--border-hover); color: var(--text); }
+.lang-option.selected {
+  border-color: var(--gold); background: var(--gold-glow); color: var(--gold);
+}
+.lang-flag { font-size: 1.1rem; }
+
+/* ══════════════════════════════════════════
+   FORM SELECT
+══════════════════════════════════════════ */
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+.form-label {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-2);
+}
+.form-select {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: var(--font-body); font-size: 0.88rem;
+  padding: 11px 14px; outline: none; width: 100%;
+  transition: border-color var(--transition); appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;
+}
+.form-select:focus { border-color: var(--gold-border); }
+
+/* ══════════════════════════════════════════
+   TOGGLE SWITCH
+══════════════════════════════════════════ */
+.pref-list { display: flex; flex-direction: column; }
+.pref-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+}
+.pref-item:last-child { border-bottom: none; }
+.pref-label { font-size: 0.88rem; font-weight: 500; margin-bottom: 3px; }
+.pref-desc { font-size: 0.74rem; color: var(--text-3); }
+.toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--bg-3); border: 1px solid var(--border-hover);
+  border-radius: 100px; transition: background var(--transition), border-color var(--transition);
+}
+.toggle input:checked + .toggle-track { background: var(--gold); border-color: var(--gold); }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; background: var(--text-3);
+  border-radius: 50%; transition: transform var(--transition), background var(--transition);
+  pointer-events: none;
+}
+.toggle input:checked ~ .toggle-thumb { transform: translateX(20px); background: #000; }
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-3); border: 1px solid var(--border-hover);
+  border-radius: 100px; padding: 12px 24px;
+  font-size: 0.82rem; color: var(--text);
+  opacity: 0; transition: all 0.3s ease; z-index: 400; white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(34,197,94,0.35); color: var(--success); }
+.toast.error   { border-color: rgba(239,68,68,0.35); color: var(--error); }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .page-content { padding: 1.25rem; }
+  .theme-grid { grid-template-columns: 1fr; }
+  .lang-grid { grid-template-columns: 1fr 1fr; }
+  .form-row-2 { grid-template-columns: 1fr; }
 }
 </style>
+<script src="themeAccent.js" defer></script>
 </head>
 <body>
 <div class="app-shell">
 
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
 <aside class="sidebar">
   <div class="sidebar-top">
-    <a href="index.html" class="sidebar-logo"><div class="logo-dot"></div>CRITERIA</a>
+    <a href="index.html" class="sidebar-logo">
+      <div class="logo-dot"></div>
+      CRITERIA
+    </a>
   </div>
   <div class="sidebar-user">
     <div class="sidebar-avatar-wrap">
-      <div class="sidebar-avatar" id="sb-avatar"><span id="sb-initials">?</span></div>
-      <div>
+      <div class="sidebar-avatar" id="sb-avatar">
+        <span id="sb-initials">?</span>
+      </div>
+      <div style="min-width:0;">
         <div class="sidebar-user-name" id="sb-name">—</div>
         <div class="sidebar-user-email" id="sb-email">—</div>
       </div>
@@ -185,37 +363,55 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Account</div>
-    <div class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">◎</span> Profile Settings</div>
-    <div class="nav-item active" onclick="location.href='settings.html'"><span class="nav-icon">⚙</span> Preferences</div>
+    <div class="nav-item" onclick="location.href='profile.html'">
+      <span class="nav-icon">◎</span> Profile Settings
+    </div>
+    <div class="nav-item active">
+      <span class="nav-icon">⚙</span> Preferences
+    </div>
     <div class="nav-section-label">Studio</div>
-    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="nav-icon">▦</span> Dashboard</div>
-    <div class="nav-item" onclick="location.href='index.html#request'"><span class="nav-icon">＋</span> New Project</div>
-    <div class="nav-item" onclick="location.href='index.html'"><span class="nav-icon">⌂</span> Back to Site</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'">
+      <span class="nav-icon">▦</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="location.href='index.html#request'">
+      <span class="nav-icon">＋</span> New Project
+    </div>
+    <div class="nav-item" onclick="location.href='index.html'">
+      <span class="nav-icon">⌂</span> Back to Site
+    </div>
   </nav>
   <div class="sidebar-bottom">
-    <div class="nav-item" style="color:var(--error);" onclick="signOutUser()"><span class="nav-icon">→</span> Sign Out</div>
+    <div class="nav-item" style="color:var(--error);" onclick="signOutUser()">
+      <span class="nav-icon">→</span> Sign Out
+    </div>
   </div>
 </aside>
 
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
 <main class="main">
   <div class="topbar">
     <div class="topbar-breadcrumb">Account / <span>Preferences</span></div>
-    <button class="topbar-btn topbar-btn-primary" onclick="saveSettings()">Save Settings</button>
+    <button class="topbar-btn topbar-btn-primary" onclick="saveSettings()">
+      Save Settings
+    </button>
   </div>
 
   <div class="page-content">
 
-    <!-- THEME -->
+    <!-- ── APPEARANCE ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
           <div class="section-title">Appearance</div>
-          <div class="section-subtitle">Choose how CRITERIA looks for you</div>
+          <div class="section-subtitle">How CRITERIA looks for you</div>
         </div>
       </div>
       <div class="section-body">
-        <div class="theme-grid">
-          <div class="theme-card selected" id="theme-dark" onclick="setTheme('dark')">
+
+        <div class="theme-grid" style="margin-bottom:2rem;">
+          <div class="theme-card selected" id="theme-card-dark" onclick="setTheme('dark')">
             <div class="theme-preview preview-dark">
               <div class="preview-dot"></div>
               <div class="preview-nav"></div>
@@ -225,9 +421,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
               </div>
             </div>
             <div class="theme-label">Dark</div>
-            <div class="theme-desc">Easy on the eyes, premium feel</div>
+            <div class="theme-desc">Premium, easy on the eyes</div>
           </div>
-          <div class="theme-card" id="theme-light" onclick="setTheme('light')">
+          <div class="theme-card" id="theme-card-light" onclick="setTheme('light')">
             <div class="theme-preview preview-light">
               <div class="preview-dot"></div>
               <div class="preview-nav"></div>
@@ -237,117 +433,116 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
               </div>
             </div>
             <div class="theme-label">Light</div>
-            <div class="theme-desc">Clean and minimal, great outdoors</div>
+            <div class="theme-desc">Clean, minimal, bright</div>
           </div>
         </div>
 
-        <div style="margin-top:2rem;">
-          <div style="font-size:0.75rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);margin-bottom:0.75rem;">Accent Color</div>
-          <div class="accent-row">
-            <div class="accent-swatch selected" style="background:#f0a500;" data-color="#f0a500" title="Gold" onclick="setAccent('#f0a500',this)"></div>
-            <div class="accent-swatch" style="background:#4f8ef7;" data-color="#4f8ef7" title="Blue" onclick="setAccent('#4f8ef7',this)"></div>
-            <div class="accent-swatch" style="background:#a78bfa;" data-color="#a78bfa" title="Purple" onclick="setAccent('#a78bfa',this)"></div>
-            <div class="accent-swatch" style="background:#22c55e;" data-color="#22c55e" title="Green" onclick="setAccent('#22c55e',this)"></div>
-            <div class="accent-swatch" style="background:#ef4444;" data-color="#ef4444" title="Red" onclick="setAccent('#ef4444',this)"></div>
-            <div class="accent-swatch" style="background:#f5f5f5;" data-color="#f5f5f5" title="White" onclick="setAccent('#f5f5f5',this)"></div>
-          </div>
+        <div class="sub-label">Accent Color</div>
+        <div class="accent-row" id="accent-row">
+          <div class="accent-swatch selected" style="background:#f0a500;" data-color="#f0a500" title="Gold"    onclick="setAccent('#f0a500',this)"></div>
+          <div class="accent-swatch"          style="background:#4f8ef7;" data-color="#4f8ef7" title="Blue"    onclick="setAccent('#4f8ef7',this)"></div>
+          <div class="accent-swatch"          style="background:#a78bfa;" data-color="#a78bfa" title="Purple"  onclick="setAccent('#a78bfa',this)"></div>
+          <div class="accent-swatch"          style="background:#22c55e;" data-color="#22c55e" title="Green"   onclick="setAccent('#22c55e',this)"></div>
+          <div class="accent-swatch"          style="background:#ef4444;" data-color="#ef4444" title="Red"     onclick="setAccent('#ef4444',this)"></div>
+          <div class="accent-swatch"          style="background:#e2e2e2;" data-color="#e2e2e2" title="Silver"  onclick="setAccent('#e2e2e2',this)"></div>
         </div>
+
       </div>
     </div>
 
-    <!-- LANGUAGE -->
+    <!-- ── LANGUAGE & REGION ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
           <div class="section-title">Language & Region</div>
-          <div class="section-subtitle">Interface language and time format</div>
+          <div class="section-subtitle">Interface language and date / time preferences</div>
         </div>
       </div>
       <div class="section-body">
-        <div style="margin-bottom:1.5rem;">
-          <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);margin-bottom:0.75rem;">Display Language</div>
-          <div class="lang-grid">
-            <div class="lang-option selected" onclick="setLang(this)"><span class="lang-flag">🇺🇸</span>English</div>
-            <div class="lang-option" onclick="setLang(this)"><span class="lang-flag">🇮🇳</span>Hindi</div>
-            <div class="lang-option" onclick="setLang(this)"><span class="lang-flag">🇮🇳</span>Malayalam</div>
-            <div class="lang-option" onclick="setLang(this)"><span class="lang-flag">🇦🇪</span>Arabic</div>
-            <div class="lang-option" onclick="setLang(this)"><span class="lang-flag">🇫🇷</span>French</div>
-            <div class="lang-option" onclick="setLang(this)"><span class="lang-flag">🇩🇪</span>German</div>
-          </div>
+        <div class="sub-label" style="margin-bottom:0.75rem;">Display Language</div>
+        <div class="lang-grid" id="lang-grid">
+          <div class="lang-option selected" data-lang="en"  onclick="setLang(this)"><span class="lang-flag">🇺🇸</span> English</div>
+          <div class="lang-option"          data-lang="hi"  onclick="setLang(this)"><span class="lang-flag">🇮🇳</span> Hindi</div>
+          <div class="lang-option"          data-lang="ml"  onclick="setLang(this)"><span class="lang-flag">🇮🇳</span> Malayalam</div>
+          <div class="lang-option"          data-lang="ar"  onclick="setLang(this)"><span class="lang-flag">🇦🇪</span> Arabic</div>
+          <div class="lang-option"          data-lang="fr"  onclick="setLang(this)"><span class="lang-flag">🇫🇷</span> French</div>
+          <div class="lang-option"          data-lang="de"  onclick="setLang(this)"><span class="lang-flag">🇩🇪</span> German</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div>
-            <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);margin-bottom:0.5rem;">Timezone</div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Timezone</label>
             <select class="form-select" id="s-timezone">
-              <option>Asia/Kolkata (IST, +5:30)</option>
-              <option>America/New_York (EST, -5:00)</option>
-              <option>Europe/London (GMT, +0:00)</option>
-              <option>Asia/Dubai (GST, +4:00)</option>
-              <option>America/Los_Angeles (PST, -8:00)</option>
+              <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
+              <option value="America/New_York">America/New_York (EST −5:00)</option>
+              <option value="Europe/London">Europe/London (GMT +0:00)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST +4:00)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (PST −8:00)</option>
+              <option value="Asia/Singapore">Asia/Singapore (SGT +8:00)</option>
             </select>
           </div>
-          <div>
-            <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);margin-bottom:0.5rem;">Date Format</div>
+          <div class="form-group">
+            <label class="form-label">Date Format</label>
             <select class="form-select" id="s-dateformat">
-              <option>DD/MM/YYYY</option>
-              <option>MM/DD/YYYY</option>
-              <option>YYYY-MM-DD</option>
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
             </select>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- NOTIFICATIONS -->
+    <!-- ── NOTIFICATIONS ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
           <div class="section-title">Notifications</div>
-          <div class="section-subtitle">Choose what you get notified about</div>
+          <div class="section-subtitle">Control what emails and alerts you receive</div>
         </div>
       </div>
       <div class="section-body">
         <div class="pref-list">
           <div class="pref-item">
-            <div class="pref-left">
+            <div>
               <div class="pref-label">Project status updates</div>
-              <div class="pref-desc">When your project moves to a new stage</div>
+              <div class="pref-desc">When your project moves to In Review, Preview Ready, or Completed</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="notif-status" checked/>
+              <input type="checkbox" id="n-status" checked/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
           <div class="pref-item">
-            <div class="pref-left">
+            <div>
               <div class="pref-label">Preview ready alerts</div>
-              <div class="pref-desc">When your preview is created and waiting for approval</div>
+              <div class="pref-desc">When your watermarked preview is created and waiting for approval</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="notif-preview" checked/>
+              <input type="checkbox" id="n-preview" checked/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
           <div class="pref-item">
-            <div class="pref-left">
+            <div>
               <div class="pref-label">File delivery confirmation</div>
-              <div class="pref-desc">When your final files are ready to download</div>
+              <div class="pref-desc">When your final, watermark-free files are ready to download</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="notif-delivery" checked/>
+              <input type="checkbox" id="n-delivery" checked/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
           <div class="pref-item">
-            <div class="pref-left">
+            <div>
               <div class="pref-label">Promotional emails</div>
-              <div class="pref-desc">New services, offers, and studio updates</div>
+              <div class="pref-desc">New services, seasonal offers, and studio announcements</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="notif-promo"/>
+              <input type="checkbox" id="n-promo"/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
@@ -356,34 +551,34 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       </div>
     </div>
 
-    <!-- PRIVACY -->
+    <!-- ── PRIVACY ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
           <div class="section-title">Privacy</div>
-          <div class="section-subtitle">Control your data and visibility</div>
+          <div class="section-subtitle">Control your data and public visibility</div>
         </div>
       </div>
       <div class="section-body">
         <div class="pref-list">
           <div class="pref-item">
-            <div class="pref-left">
-              <div class="pref-label">Show profile in gallery</div>
-              <div class="pref-desc">Allow your approved work to appear in the public portfolio</div>
+            <div>
+              <div class="pref-label">Show work in public gallery</div>
+              <div class="pref-desc">Allow approved project work to appear in CRITERIA's public portfolio</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="priv-gallery" checked/>
+              <input type="checkbox" id="p-gallery" checked/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
           <div class="pref-item">
-            <div class="pref-left">
-              <div class="pref-label">Analytics tracking</div>
-              <div class="pref-desc">Help us improve by sharing anonymous usage data</div>
+            <div>
+              <div class="pref-label">Anonymous usage analytics</div>
+              <div class="pref-desc">Help us improve the platform by sharing anonymous interaction data</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="priv-analytics" checked/>
+              <input type="checkbox" id="p-analytics" checked/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
@@ -392,7 +587,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       </div>
     </div>
 
-    <!-- ACCESSIBILITY -->
+    <!-- ── ACCESSIBILITY ── -->
     <div class="settings-section">
       <div class="section-header">
         <div>
@@ -401,181 +596,282 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
         </div>
       </div>
       <div class="section-body">
-        <div class="pref-list">
+        <div class="pref-list" style="margin-bottom:1.5rem;">
           <div class="pref-item">
-            <div class="pref-left">
+            <div>
               <div class="pref-label">Reduce motion</div>
-              <div class="pref-desc">Minimize animations across the site</div>
+              <div class="pref-desc">Disable animations and transitions across the site</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="a11y-motion" onchange="toggleReduceMotion(this.checked)"/>
+              <input type="checkbox" id="a-motion" onchange="applyReduceMotion(this.checked)"/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
           <div class="pref-item">
-            <div class="pref-left">
-              <div class="pref-label">High contrast mode</div>
-              <div class="pref-desc">Increase border and text contrast</div>
+            <div>
+              <div class="pref-label">High contrast borders</div>
+              <div class="pref-desc">Increase border and separator visibility</div>
             </div>
             <label class="toggle">
-              <input type="checkbox" id="a11y-contrast" onchange="toggleHighContrast(this.checked)"/>
+              <input type="checkbox" id="a-contrast" onchange="applyHighContrast(this.checked)"/>
               <div class="toggle-track"></div>
               <div class="toggle-thumb"></div>
             </label>
           </div>
         </div>
-        <div style="margin-top:1.5rem;">
-          <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-2);margin-bottom:0.5rem;">Font Size</div>
-          <select class="form-select" id="s-fontsize" onchange="applyFontSize(this.value)" style="max-width:240px;">
-            <option value="14">Small (14px)</option>
-            <option value="15" selected>Default (15px)</option>
-            <option value="17">Large (17px)</option>
-            <option value="19">Extra Large (19px)</option>
-          </select>
-        </div>
+
+        <div class="sub-label">Font Size</div>
+        <select class="form-select" id="s-fontsize"
+                onchange="applyFontSize(this.value)"
+                style="max-width:240px;">
+          <option value="13">Small (13px)</option>
+          <option value="15" selected>Default (15px)</option>
+          <option value="17">Large (17px)</option>
+          <option value="19">Extra Large (19px)</option>
+        </select>
       </div>
     </div>
 
-  </div>
+  </div><!-- /page-content -->
 </main>
-</div>
+</div><!-- /app-shell -->
 
 <div class="toast" id="toast"></div>
 
+<!-- ══════════════════════════════════════════
+     FIREBASE + LOGIC
+══════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
-  getAuth,
-  onAuthStateChanged,
-  signOut,
-  setPersistence,
-  browserLocalPersistence
+  getAuth, onAuthStateChanged, signOut
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {
+  getFirestore, doc, getDoc, setDoc
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-await setPersistence(auth, browserLocalPersistence);
-
+// ════════════════════════════════════════
+// ✏️ CHANGE THIS → your Firebase config
+// ════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyC5PXHOl3UYhsWImZBKXYXbikYASWVC-7Y",
-  authDomain: "criteria-18e9d.firebaseapp.com",
-  projectId: "criteria-18e9d",
-  storageBucket: "criteria-18e9d.firebasestorage.app",
+  apiKey:            "AIzaSyC5PXHOl3UYhsWImZBKXYXbikYASWVC-7Y",
+  authDomain:        "criteria-18e9d.firebaseapp.com",
+  projectId:         "criteria-18e9d",
+  storageBucket:     "criteria-18e9d.firebasestorage.app",
   messagingSenderId: "427729441325",
-  appId: "1:427729441325:web:43a77167bd1f9fc5c65ea4",
-  measurementId: "G-REED8MQQYX"
+  appId:             "1:427729441325:web:43a77167bd1f9fc5c65ea4"
 };
 
 const app  = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
 const db   = getFirestore(app);
 let currentUser = null;
 
+// ─────────────────────────────
+// AUTH GUARD
+// ─────────────────────────────
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
-  const name = user.displayName || 'User';
+
+  const name  = user.displayName || 'User';
+  const init  = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('sb-name').textContent  = name;
   document.getElementById('sb-email').textContent = user.email || '';
-  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('sb-initials').textContent = initials;
+  const sbAvatar = document.getElementById('sb-avatar');
   if (user.photoURL) {
-    document.getElementById('sb-avatar').innerHTML = `<img src="${user.photoURL}" alt="avatar"/>`;
+    sbAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar"/>`;
+  } else {
+    sbAvatar.innerHTML = `<span id="sb-initials">${init}</span>`;
   }
+
   await loadSettings(user.uid);
 });
 
+// ─────────────────────────────
+// LOAD SETTINGS
+// ─────────────────────────────
 async function loadSettings(uid) {
+  // Try Firestore first, fall back to localStorage
+  let s = null;
   try {
     const snap = await getDoc(doc(db, 'settings', uid));
-    if (snap.exists()) {
-      const s = snap.data();
-      if (s.theme)    setTheme(s.theme, false);
-      if (s.accent)   { document.querySelectorAll('.accent-swatch').forEach(sw=>sw.classList.remove('selected')); document.querySelector(`[data-color="${s.accent}"]`)?.classList.add('selected'); document.documentElement.style.setProperty('--gold',s.accent); }
-      if (s.timezone) document.getElementById('s-timezone').value = s.timezone;
-      if (s.dateformat) document.getElementById('s-dateformat').value = s.dateformat;
-      if (s.fontSize) { document.getElementById('s-fontsize').value = s.fontSize; document.body.style.fontSize = s.fontSize + 'px'; }
-      ['notif-status','notif-preview','notif-delivery','notif-promo','priv-gallery','priv-analytics','a11y-motion','a11y-contrast'].forEach(id => {
-        if (s[id] !== undefined) document.getElementById(id).checked = s[id];
-      });
-    }
-  } catch(e) {}
+    if (snap.exists()) s = snap.data();
+  } catch(e) { /* offline or not configured */ }
+
+  if (!s) {
+    const ls = localStorage.getItem('criteria-settings');
+    if (ls) { try { s = JSON.parse(ls); } catch(e) {} }
+  }
+  if (!s) return;
+
+  // Theme
+  if (s.theme) setTheme(s.theme, false);
+
+  // Accent
+  if (s.accent) {
+    document.querySelectorAll('.accent-swatch').forEach(sw => sw.classList.remove('selected'));
+    const match = document.querySelector(`[data-color="${s.accent}"]`);
+    if (match) match.classList.add('selected');
+    applyAccentVars(s.accent);
+  }
+
+  // Language
+  if (s.lang) {
+    document.querySelectorAll('.lang-option').forEach(l => {
+      l.classList.toggle('selected', l.dataset.lang === s.lang);
+    });
+  }
+
+  // Selects
+  if (s.timezone)   document.getElementById('s-timezone').value   = s.timezone;
+  if (s.dateformat) document.getElementById('s-dateformat').value = s.dateformat;
+  if (s.fontSize)   { document.getElementById('s-fontsize').value = s.fontSize; document.body.style.fontSize = s.fontSize + 'px'; }
+
+  // Toggles
+  const toggleMap = {
+    'n-status': true, 'n-preview': true, 'n-delivery': true, 'n-promo': false,
+    'p-gallery': true, 'p-analytics': true, 'a-motion': false, 'a-contrast': false
+  };
+  Object.keys(toggleMap).forEach(id => {
+    if (s[id] !== undefined) document.getElementById(id).checked = s[id];
+    else document.getElementById(id).checked = toggleMap[id];
+  });
+
+  // Re-apply accessibility settings
+  if (s['a-motion'])   applyReduceMotion(true);
+  if (s['a-contrast']) applyHighContrast(true);
 }
 
+// ─────────────────────────────
+// SAVE SETTINGS
+// ─────────────────────────────
 window.saveSettings = async function() {
-  const settings = {
-    theme:         document.getElementById('theme-dark').classList.contains('selected') ? 'dark' : 'light',
-    accent:        document.querySelector('.accent-swatch.selected')?.dataset.color || '#f0a500',
-    timezone:      document.getElementById('s-timezone').value,
-    dateformat:    document.getElementById('s-dateformat').value,
-    fontSize:      document.getElementById('s-fontsize').value,
-    'notif-status':   document.getElementById('notif-status').checked,
-    'notif-preview':  document.getElementById('notif-preview').checked,
-    'notif-delivery': document.getElementById('notif-delivery').checked,
-    'notif-promo':    document.getElementById('notif-promo').checked,
-    'priv-gallery':   document.getElementById('priv-gallery').checked,
-    'priv-analytics': document.getElementById('priv-analytics').checked,
-    'a11y-motion':    document.getElementById('a11y-motion').checked,
-    'a11y-contrast':  document.getElementById('a11y-contrast').checked,
+  const selectedLang = document.querySelector('.lang-option.selected');
+  const selectedAccent = document.querySelector('.accent-swatch.selected');
+
+  const s = {
+    theme:      document.getElementById('theme-card-dark').classList.contains('selected') ? 'dark' : 'light',
+    accent:     selectedAccent?.dataset.color || '#f0a500',
+    lang:       selectedLang?.dataset.lang || 'en',
+    timezone:   document.getElementById('s-timezone').value,
+    dateformat: document.getElementById('s-dateformat').value,
+    fontSize:   document.getElementById('s-fontsize').value,
+    'n-status':   document.getElementById('n-status').checked,
+    'n-preview':  document.getElementById('n-preview').checked,
+    'n-delivery': document.getElementById('n-delivery').checked,
+    'n-promo':    document.getElementById('n-promo').checked,
+    'p-gallery':  document.getElementById('p-gallery').checked,
+    'p-analytics':document.getElementById('p-analytics').checked,
+    'a-motion':   document.getElementById('a-motion').checked,
+    'a-contrast': document.getElementById('a-contrast').checked,
     updatedAt: new Date().toISOString()
   };
+
+  // Always save to localStorage first (instant, no Firebase dependency)
+  localStorage.setItem('criteria-settings', JSON.stringify(s));
+  localStorage.setItem('criteria-theme', s.theme);
+  localStorage.setItem('criteria-accent', s.accent);
+
+  // Try Firestore
+  let savedToCloud = false;
   try {
-    await setDoc(doc(db, 'settings', currentUser.uid), settings);
-    showToast('Settings saved!', 'success');
-  } catch(e) { showToast('Saved locally (Firestore not configured yet)'); }
-  localStorage.setItem('criteria-settings', JSON.stringify(settings));
+    if (currentUser) {
+      await setDoc(doc(db, 'settings', currentUser.uid), s);
+      savedToCloud = true;
+    }
+  } catch(e) { /* offline */ }
+
+  showToast(savedToCloud ? 'Settings saved to your account!' : 'Settings saved locally.', 'success');
 };
 
-window.setTheme = function(t, save=true) {
+// ─────────────────────────────
+// THEME
+// ─────────────────────────────
+window.setTheme = function(t, persist = true) {
   document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('theme-dark').classList.toggle('selected', t==='dark');
-  document.getElementById('theme-light').classList.toggle('selected', t==='light');
-  if (save) localStorage.setItem('criteria-theme', t);
+  document.getElementById('theme-card-dark').classList.toggle('selected',  t === 'dark');
+  document.getElementById('theme-card-light').classList.toggle('selected', t === 'light');
+  if (persist) localStorage.setItem('criteria-theme', t);
 };
 
+// ─────────────────────────────
+// ACCENT
+// ─────────────────────────────
 window.setAccent = function(color, el) {
-  document.querySelectorAll('.accent-swatch').forEach(s=>s.classList.remove('selected'));
+  document.querySelectorAll('.accent-swatch').forEach(s => s.classList.remove('selected'));
   el.classList.add('selected');
-  document.documentElement.style.setProperty('--gold', color);
-  const r = parseInt(color.slice(1,3),16);
-  const g = parseInt(color.slice(3,5),16);
-  const b = parseInt(color.slice(5,7),16);
-  document.documentElement.style.setProperty('--gold-glow', `rgba(${r},${g},${b},0.12)`);
+  applyAccentVars(color);
+  localStorage.setItem('criteria-accent', color);
+};
+
+function applyAccentVars(color) {
+  const r = parseInt(color.slice(1,3), 16);
+  const g = parseInt(color.slice(3,5), 16);
+  const b = parseInt(color.slice(5,7), 16);
+  document.documentElement.style.setProperty('--gold',        color);
+  document.documentElement.style.setProperty('--gold-dim',    shadeColor(color, -20));
+  document.documentElement.style.setProperty('--gold-glow',   `rgba(${r},${g},${b},0.12)`);
   document.documentElement.style.setProperty('--gold-border', `rgba(${r},${g},${b},0.25)`);
-};
+}
 
+function shadeColor(hex, pct) {
+  const num = parseInt(hex.slice(1), 16);
+  const amt = Math.round(2.55 * pct);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amt));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0xff) + amt));
+  const b = Math.min(255, Math.max(0, (num & 0xff) + amt));
+  return `#${((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}`;
+}
+
+// ─────────────────────────────
+// LANGUAGE
+// ─────────────────────────────
 window.setLang = function(el) {
-  document.querySelectorAll('.lang-option').forEach(l=>l.classList.remove('selected'));
+  document.querySelectorAll('.lang-option').forEach(l => l.classList.remove('selected'));
   el.classList.add('selected');
 };
 
-window.toggleReduceMotion = function(val) {
-  document.documentElement.style.setProperty('--transition', val ? '0s' : '0.3s cubic-bezier(0.25,0.46,0.45,0.94)');
+// ─────────────────────────────
+// ACCESSIBILITY
+// ─────────────────────────────
+window.applyReduceMotion = function(val) {
+  document.documentElement.style.setProperty(
+    '--transition', val ? '0s' : '0.3s cubic-bezier(0.25,0.46,0.45,0.94)'
+  );
 };
 
-window.toggleHighContrast = function(val) {
-  document.documentElement.style.setProperty('--border', val ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)');
+window.applyHighContrast = function(val) {
+  document.documentElement.style.setProperty(
+    '--border', val ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)'
+  );
+  document.documentElement.style.setProperty(
+    '--border-hover', val ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.13)'
+  );
 };
 
 window.applyFontSize = function(val) {
   document.body.style.fontSize = val + 'px';
 };
 
+// ─────────────────────────────
+// SIGN OUT
+// ─────────────────────────────
 window.signOutUser = async function() {
   await signOut(auth);
   window.location.href = 'index.html';
 };
 
-window.showToast = function(msg, type='') {
+// ─────────────────────────────
+// TOAST
+// ─────────────────────────────
+window.showToast = function(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = `toast show ${type}`;
-  setTimeout(() => t.className = 'toast', 3500);
+  t.className   = `toast show ${type}`.trim();
+  setTimeout(() => { t.className = 'toast'; }, 3800);
 };
-
-// Load saved theme immediately (before auth)
-const savedTheme = localStorage.getItem('criteria-theme');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 </script>
 </body>
 </html>

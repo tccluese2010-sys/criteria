@@ -4,11 +4,27 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CRITERIA — Creative Studio</title>
+<link rel="icon" href="Tools/Logo No BG.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<!-- Apply saved theme & accent early to avoid flash -->
+<script>
+  (function(){
+    const t = localStorage.getItem('criteria-theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+    const a = localStorage.getItem('criteria-accent'); if (a) {
+      document.documentElement.style.setProperty('--gold', a);
+      try{
+        const r = parseInt(a.slice(1,3),16), g = parseInt(a.slice(3,5),16), b = parseInt(a.slice(5,7),16);
+        document.documentElement.style.setProperty('--gold-glow', `rgba(${r},${g},${b},0.12)`);
+        document.documentElement.style.setProperty('--gold-border', `rgba(${r},${g},${b},0.25)`);
+      }catch(e){}
+    }
+  })();
+</script>
+<script src="themeAccent.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init("0Q_5ya6Jw6StQ2m2D");</script>
+
 <style>
   :root {
     --gold: #f0a500; --gold-dim: #c98a00;
@@ -19,6 +35,12 @@
     --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
     --radius: 12px; --radius-sm: 8px; --radius-lg: 20px;
     --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  [data-theme="light"] {
+    --bg: #f5f5f2; --bg-2: #eeeeea; --bg-3: #e6e6e2; --bg-card: #ffffff;
+    --text: #0a0a0a; --text-2: #555555; --text-3: #999999;
+    --border: rgba(0,0,0,0.08); --border-hover: rgba(0,0,0,0.15);
+    --select-opt-bg: #ffffff;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -32,16 +54,23 @@
   #loading-screen {
     position: fixed; inset: 0; z-index: 9998;
     background: var(--bg);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
     transition: opacity 0.6s ease, visibility 0.6s ease;
   }
   #loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-  .loading-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; letter-spacing: 0.3em; color: var(--text); display: flex; align-items: center; gap: 10px; }
-  .loading-bar-wrap { width: 180px; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .loading-bar { height: 100%; background: var(--gold); border-radius: 2px; animation: loading-progress 1.8s ease-in-out forwards; }
-  @keyframes loading-progress { 0% { width: 0%; } 60% { width: 75%; } 100% { width: 100%; } }
-  .loading-text { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-3); animation: loading-blink 1.4s ease-in-out infinite; }
+  .loading-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; letter-spacing: 0.3em; color: var(--text); display: flex; align-items: center; gap: 10px; animation: fade-up 0.8s ease forwards; }
+  .loading-spinner { width: 50px; height: 50px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-bar-wrap { width: 220px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; animation: fade-up 0.8s ease forwards 0.2s both; }
+  .loading-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hover)); border-radius: 2px; animation: loading-progress 2.5s ease-in-out infinite; }
+  @keyframes loading-progress { 0% { width: 0%; } 40% { width: 65%; } 100% { width: 100%; } }
+  .loading-text { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-3); animation: loading-blink 1.4s ease-in-out infinite 0.3s both; }
   @keyframes loading-blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .loading-status { font-size: 0.68rem; letter-spacing: 0.12em; color: var(--text-3); text-transform: uppercase; opacity: 0.7; animation: fade-up 0.8s ease forwards 0.5s both; min-height: 16px; }
+  .loading-dots span { display: inline-block; animation: dot-pulse 1.4s ease-in-out infinite; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-pulse { 0%, 60%, 100% { opacity: 0.4; } 30% { opacity: 1; } }
 
   /* ── NOTIFICATION TOAST (slide from top) ── */
   #notif-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 9997; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; pointer-events: none; }
@@ -68,15 +97,14 @@
 
   nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 5%; height: 72px; display: flex; align-items: center; justify-content: space-between; background: rgba(8,8,8,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
   .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; letter-spacing: 0.25em; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-  .nav-logo-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; animation: pulse-dot 2.5s ease-in-out infinite; }
-  @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+.nav-logo-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse-dot 2.5s ease-in-out infinite;}  @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
   .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
   .nav-links a { font-size: 0.82rem; letter-spacing: 0.08em; color: var(--text-2); text-decoration: none; text-transform: uppercase; transition: color var(--transition); }
   .nav-links a:hover { color: var(--text); }
   .nav-signin { font-size: 0.82rem !important; letter-spacing: 0.08em; color: var(--text-2) !important; border: 1px solid var(--border-hover) !important; padding: 8px 18px; border-radius: 100px; transition: color var(--transition), border-color var(--transition) !important; }
   .nav-signin:hover { color: var(--gold) !important; border-color: var(--gold-border) !important; }
   .nav-cta { font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #000 !important; background: var(--gold); padding: 9px 22px; border-radius: 100px; text-decoration: none; transition: background var(--transition), transform var(--transition) !important; }
-  .nav-cta:hover { background: #ffc030 !important; transform: translateY(-1px) !important; }
+  .nav-cta:hover { background: var(--gold-hover) !important; transform: translateY(-1px) !important; }
 
   /* NAV USER AVATAR */
   #nav-user { display: none; align-items: center; gap: 10px; position: relative; }
@@ -90,6 +118,16 @@
   .dd-link:hover { background: var(--bg-2); color: var(--text); }
   .dd-link.danger { color: #ef4444; }
   .dd-link.danger:hover { background: rgba(239,68,68,0.08); }
+  .nav-badge { position: absolute; top: 0px; right: 0px; width: 18px; height: 18px; display:flex; align-items:center; justify-content:center; border-radius:999px; background:#ef4444; color:#fff; font-size:0.7rem; font-weight:700; border:1px solid var(--bg); z-index:2; }
+  .dd-section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin: 0.85rem 0 0.4rem; }
+  .notification-list { max-height: 220px; overflow:auto; border:1px solid var(--border); border-radius: 14px; padding: 0.65rem; background: rgba(255,255,255,0.03); }
+  .notification-item { padding: 0.8rem 0.9rem; border-radius: 14px; margin-bottom: 0.65rem; border: 1px solid transparent; display:flex; flex-direction:column; gap:0.4rem; }
+  .notification-item:last-child { margin-bottom: 0; }
+  .notification-item.unread { background: rgba(240,165,0,0.08); border-color: rgba(240,165,0,0.16); }
+  .notification-item.error { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.16); color: #ef4444; }
+  .notification-item .note-message { font-size: 0.82rem; color: var(--text); }
+  .notification-item .note-meta { font-size: 0.72rem; color: var(--text-3); display:flex; justify-content:space-between; gap:0.5rem; }
+  .notification-empty { font-size: 0.82rem; color: var(--text-3); padding: 0.9rem 0.75rem; text-align:center; }
   .dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
   /* Unverified email warning in dropdown */
   .dd-verify-warning { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; margin: 4px 0; font-size: 0.72rem; color: #ef4444; cursor: pointer; }
@@ -106,12 +144,17 @@
   .hero-subtitle { max-width: 540px; font-size: 1.05rem; font-weight: 300; color: var(--text-2); line-height: 1.75; margin-bottom: 3rem; opacity: 0; animation: fade-up 0.8s ease forwards 0.6s; }
   .hero-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center; opacity: 0; animation: fade-up 0.8s ease forwards 0.8s; }
   .btn-primary { font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: #000; background: var(--gold); border: none; padding: 16px 36px; border-radius: 100px; cursor: pointer; text-decoration: none; transition: background var(--transition), transform var(--transition), box-shadow var(--transition); }
-  .btn-primary:hover { background: #ffc030; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(240,165,0,0.25); }
+  .btn-primary:hover { background: var(--gold-hover); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
   .btn-secondary { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); background: transparent; border: 1px solid var(--border-hover); padding: 15px 30px; border-radius: 100px; cursor: pointer; text-decoration: none; transition: color var(--transition), border-color var(--transition), transform var(--transition); }
   .btn-secondary:hover { color: var(--text); transform: translateY(-2px); }
   .hero-scroll { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-3); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0; animation: fade-up 0.8s ease forwards 1.2s; }
   .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--text-3), transparent); animation: scroll-anim 2s ease-in-out infinite; }
   @keyframes scroll-anim { 0% { transform: scaleY(1); transform-origin: top; } 50% { transform: scaleY(0); transform-origin: top; } 51% { transform: scaleY(0); transform-origin: bottom; } 100% { transform: scaleY(1); transform-origin: bottom; } }
+
+  /* FULLSCREEN HINT */
+  .fullscreen-hint { position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 99; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); background: rgba(8,8,8,0.95); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer; transition: all var(--transition); opacity: 0.4; }
+  .fullscreen-hint:hover { color: var(--gold); border-color: var(--gold-border); opacity: 1; }
+  @media(max-width:768px) { .fullscreen-hint { display: none; } }
 
   /* SECTION BASE */
   section { position: relative; z-index: 1; }
@@ -128,19 +171,142 @@
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
   /* SERVICES */
-  #services { padding: 120px 0; }
-  .services-header { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; margin-bottom: 4rem; }
-  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .service-card { background: var(--bg-card); padding: 2.5rem 2rem; transition: background var(--transition); cursor: default; position: relative; overflow: hidden; }
-  .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform var(--transition); }
-  .service-card:hover { background: var(--bg-3); }
-  .service-card:hover::before { transform: scaleX(1); }
-  .service-icon { width: 44px; height: 44px; border: 1px solid var(--border-hover); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.5rem; transition: border-color var(--transition), background var(--transition); }
-  .service-card:hover .service-icon { border-color: var(--gold-border); background: var(--gold-glow); }
-  .service-name { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin-bottom: 0.6rem; }
-  .service-desc { font-size: 0.85rem; color: var(--text-2); line-height: 1.65; }
-  .service-tag { display: inline-block; margin-top: 1.2rem; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold-border); border-radius: 100px; padding: 4px 12px; }
-  #poster-block { background-image: url('ToolsImages/PosterImg.jpeg'); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 20px) calc(100% - 20px); }
+#services {
+  padding: 120px 0;
+}
+
+/* HEADER */
+.services-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+  margin-bottom: 4rem;
+}
+
+/* GRID */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* CARD */
+.service-card {
+  background: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+  transition:
+    background var(--transition),
+    transform var(--transition);
+}
+
+/* TOP GOLD LINE */
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--gold);
+
+  transform: scaleX(0);
+  transform-origin: left;
+
+  transition: transform var(--transition);
+}
+
+.service-card:hover {
+  background: var(--bg-3);
+  transform: translateY(-4px);
+}
+
+.service-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* IMAGE AREA */
+.service-preview {
+  height: 210px;
+
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+
+  background: #0a0a0a;
+}
+
+/* IMAGE */
+.service-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  transition:
+    transform 0.6s ease,
+    opacity 0.4s ease;
+
+  opacity: 0.88;
+}
+
+/* IMAGE HOVER */
+.service-card:hover .service-preview img {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+/* CONTENT AREA */
+.service-content {
+  padding: 2rem;
+}
+
+/* TITLE */
+.service-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+
+  margin-bottom: 0.8rem;
+}
+
+/* DESCRIPTION */
+.service-desc {
+  font-size: 0.88rem;
+  color: var(--text-2);
+
+  line-height: 1.7;
+}
+
+/* TAG */
+.service-tag {
+  display: inline-block;
+
+  margin-top: 1.4rem;
+
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  color: var(--gold);
+
+  border: 1px solid var(--gold-border);
+  border-radius: 100px;
+
+  padding: 5px 13px;
+
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.service-card:hover .service-tag {
+  background: var(--gold);
+  color: #000;
+}
 
   /* HOW IT WORKS */
   #how { padding: 120px 0; background: var(--bg-2); }
@@ -201,6 +367,8 @@
   .gallery-item:nth-child(4) { grid-column: 1 / 4; grid-row: 2 / 3; }
   .gallery-item:nth-child(5) { grid-column: 4 / 9; grid-row: 2 / 3; }
   .gallery-item-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .gallery-item-bg video { width: 100%; height: 100%; object-fit: cover; object-position: center 10%; transform: scale(1.1); }
+  .gallery-item-bg.g3 video { object-position: center 4%; }
   .g1 { background: linear-gradient(135deg, #1a0533 0%, #4a1080 50%, #8b20c0 100%); }
   .g2 { background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #2d5a8e 100%); }
   .g3 { background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 50%, #2a1f00 100%); }
@@ -275,7 +443,7 @@
   .auth-input:focus { border-color: var(--gold-border); }
   .auth-input::placeholder { color: var(--text-3); }
   .auth-btn-primary { width: 100%; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: #000; background: var(--gold); border: none; padding: 15px; border-radius: 100px; cursor: pointer; transition: background var(--transition), transform var(--transition); margin-top: 0.25rem; }
-  .auth-btn-primary:hover { background: #ffc030; transform: translateY(-1px); }
+  .auth-btn-primary:hover { background: var(--gold-hover); transform: translateY(-1px); }
   .auth-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .auth-divider { display: flex; align-items: center; gap: 1rem; font-size: 0.72rem; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; }
   .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
@@ -318,14 +486,19 @@
     <div class="nav-logo-dot"></div>
     CRITERIA
   </div>
+  <div class="loading-spinner"></div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-text">Loading studio...</div>
+  <div class="loading-text">Initializing<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+  <div class="loading-status" id="loading-status">Connecting Firebase</div>
 </div>
 
 <!-- NOTIFICATION CONTAINER -->
 <div id="notif-container"></div>
 
 <div id="cursor"></div>
+
+<!-- FULLSCREEN HINT -->
+<div class="fullscreen-hint" onclick="toggleFullscreen()" title="Press F11 for fullscreen experience">Experience the best of our website • Press F11</div>
 
 <!-- AUTH MODAL -->
 <div class="auth-overlay" id="auth-overlay" onclick="handleOverlayClick(event)">
@@ -396,11 +569,12 @@
     <li><a href="#gallery">Work</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#" class="nav-signin" id="nav-signin-btn" onclick="openAuth(event)">Sign In</a></li>
-    <li><a href="project.html" class="nav-cta" id="nav-start-btn" style="display:none;">Start a Project</a></li>
+    <li><a href="submit.html" class="nav-cta" id="nav-start-btn" style="display:none;">Start a Project</a></li>
     <li><a href="#" class="nav-cta" id="nav-signup-btn" onclick="openAuthSignup(event)">Get Started</a></li>
   </ul>
   <div id="nav-user">
     <div id="nav-avatar" onclick="toggleUserMenu()"></div>
+    <span id="notification-badge" class="nav-badge" style="display:none;">0</span>
     <div id="user-dropdown">
       <div class="dd-header">
         <div class="dd-name" id="user-name-display"></div>
@@ -410,9 +584,14 @@
         ⚠ Email not verified — click to resend
       </div>
       <a href="dashboard.html" class="dd-link"><span>▦</span> Dashboard</a>
-      <a href="project.html" class="dd-link"><span>＋</span> New Project</a>
+      <a href="submit.html" class="dd-link"><span>＋</span> New Project</a>
       <a href="profile.html" class="dd-link"><span>◎</span> Profile Settings</a>
       <a href="settings.html" class="dd-link"><span>⚙</span> Preferences</a>
+      <div class="dd-section-title">Notifications</div>
+      <div id="notification-list" class="notification-list">
+        <div class="notification-empty">No notifications yet.</div>
+      </div>
+      <a href="#" class="dd-link" onclick="event.preventDefault(); markAllNotificationsRead()"><span>✓</span> Mark all read</a>
       <div class="dd-divider"></div>
       <a class="dd-link danger" onclick="signOutUser(event)"><span>→</span> Sign Out</a>
     </div>
@@ -427,7 +606,7 @@
   <h1 class="hero-title">We Create Work<br><span class="hero-title-line2">Worth Keeping.</span></h1>
   <p class="hero-subtitle">Posters, logos, websites, thumbnails — built with precision, shown before payment. You see it first. You pay only when you love it.</p>
   <div class="hero-actions">
-    <a href="project.html" class="btn-primary" id="hero-start-btn" style="display:none;">Start a Project</a>
+    <a href="submit.html" class="btn-primary" id="hero-start-btn" style="display:none;">Start a Project</a>
     <a href="#" class="btn-primary" id="hero-signup-btn" onclick="openAuthSignup(event)">Start a Project</a>
     <a href="#how" class="btn-secondary">See How It Works</a>
   </div>
@@ -445,37 +624,93 @@
       <p class="section-desc">From your first brand asset to a fully deployed website — we handle the craft so you can focus on what matters.</p>
     </div>
     <div class="services-grid reveal">
-      <div class="service-card" id="poster-block">
-        <div class="service-icon">🎨</div><div class="service-name">Posters & Graphics</div>
-        <div class="service-desc">Event posters, brand graphics, social media visuals, and print-ready artwork that stands out.</div>
-        <div class="service-tag">Watermarked Preview</div>
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/Poster.jpeg" alt="">
       </div>
-      <div class="service-card">
-        <div class="service-icon">✦</div><div class="service-name">Logo & Branding</div>
-        <div class="service-desc">Identity design with a soul — wordmarks, icons, full brand systems with color palette and typography.</div>
-        <div class="service-tag">Concept Preview</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">⚡</div><div class="service-name">Thumbnails</div>
-        <div class="service-desc">YouTube thumbnails, podcast covers, and content artwork engineered to grab attention instantly.</div>
-        <div class="service-tag">Watermarked Preview</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">◈</div><div class="service-name">Websites</div>
-        <div class="service-desc">Clean, modern, fast — landing pages, portfolio sites, and business websites built for today.</div>
-        <div class="service-tag">Live Preview Link</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">▶</div><div class="service-name">Video Editing</div>
-        <div class="service-desc">Reels, YouTube videos, short-form content — cut, color-graded, and paced to keep viewers watching.</div>
-        <div class="service-tag">Watermarked Preview</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">◎</div><div class="service-name">UI / Presentations</div>
-        <div class="service-desc">App mockups, pitch decks, and presentation design that makes ideas impossible to ignore.</div>
-        <div class="service-tag">Live Preview</div>
+      <div class="service-content">
+        <div class="service-name">Posters & Graphics</div>
+        <div class="service-desc">
+          Event posters, brand graphics, social media visuals,
+          and print-ready artwork that stands out.
+        </div>
+        <div class="service-tag">
+          Watermarked Preview
+        </div>
       </div>
     </div>
+
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/Logo.jpeg" alt="">
+      </div>
+      <div class="service-content">
+        <div class="service-name">Logo & Branding</div>
+        <div class="service-desc">
+          Identity design with a soul — wordmarks, icons, full brand systems with color palette and typography
+        </div>
+        <div class="service-tag">
+          Concept Preview
+        </div>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/Thumbnail.jpeg" alt="">
+      </div>
+      <div class="service-content">
+        <div class="service-name">Thumbnails</div>
+        <div class="service-desc">
+          YouTube thumbnails, podcast covers, and content artwork engineered to grab attention instantly
+        </div>
+        <div class="service-tag">
+          Watermarked Preview
+        </div>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/Website.jpeg" alt="">
+      </div>
+      <div class="service-content">
+        <div class="service-name">Websites</div>
+        <div class="service-desc">
+          Clean, modern, fast — landing pages, portfolio sites, and business websites built for today
+        </div>
+        <div class="service-tag">
+          Live Preview Link
+        </div>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/Videos.jpeg" alt="">
+      </div>
+      <div class="service-content">
+        <div class="service-name">Video Editing</div>
+        <div class="service-desc">
+          Reels, YouTube videos, short-form content — cut, color-graded, and paced to keep viewers watching.
+        </div>
+        <div class="service-tag">
+          Watermarked blurred Preview
+        </div>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="service-preview">
+        <img src="Tools/UI-Presentations.jpeg" alt="">
+      </div>
+      <div class="service-content">
+        <div class="service-name">UI / Presentations</div>
+        <div class="service-desc">
+          App mockups, pitch decks, and presentation design that makes ideas impossible to ignore
+        </div>
+        <div class="service-tag">
+          Live Preview
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -552,9 +787,17 @@
   <div class="section-inner">
     <div class="reveal"><span class="section-label">Portfolio</span><h2 class="section-title">Taste the standard.</h2><p class="section-desc" style="margin-top:0.75rem;">A glimpse at the level of craft we bring to every project.</p></div>
     <div class="gallery-grid reveal">
-      <div class="gallery-item"><div class="gallery-item-bg g1"><div class="gallery-icon">🎭</div></div><div class="gallery-label">Event Poster</div><div class="gallery-coming">Coming Soon</div></div>
+      <div class="gallery-item">
+        <div class="gallery-item-bg g1">
+          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;">
+            <source src="Tools/event poster.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="gallery-label">Event Poster</div>
+        <div class="gallery-coming">Coming Soon</div>
+      </div>
       <div class="gallery-item"><div class="gallery-item-bg g2"><div class="gallery-icon">✦</div></div><div class="gallery-label">Brand Identity</div><div class="gallery-coming">Coming Soon</div></div>
-      <div class="gallery-item"><div class="gallery-item-bg g3"><div class="gallery-icon">◈</div></div><div class="gallery-label">Web Design</div><div class="gallery-coming">Coming Soon</div></div>
+      <div class="gallery-item"><div class="gallery-item-bg g3"><video autoplay muted loop playsinline class="gallery-preview-video"><source src="Premium_website_promo_video_202605200655.mp4" type="video/mp4"></video></div><div class="gallery-label">Web Design</div><div class="gallery-coming">Coming Soon</div></div>
       <div class="gallery-item"><div class="gallery-item-bg g4"><div class="gallery-icon">◎</div></div><div class="gallery-label">Thumbnail</div><div class="gallery-coming">Coming Soon</div></div>
       <div class="gallery-item"><div class="gallery-item-bg g5"><div class="gallery-icon">▶</div></div><div class="gallery-label">Video Edit</div><div class="gallery-coming">Coming Soon</div></div>
     </div>
@@ -578,7 +821,7 @@
         <div style="font-size:2.5rem;margin-bottom:1rem;">🚀</div>
         <div style="font-family:var(--font-display);font-weight:700;font-size:1.4rem;margin-bottom:0.75rem;">Ready to create something?</div>
         <div style="font-size:0.95rem;color:var(--text-2);margin-bottom:2rem;">Head over to our project form — walk through each step, add your references, and we'll get back to you with a preview.</div>
-        <a href="project.html" class="btn-primary">Open Project Form →</a>
+        <a href="submit.html" class="btn-primary">Open Project Form →</a>
       </div>
     </div>
   </div>
@@ -613,7 +856,7 @@
       </div>
       <div>
         <div class="footer-col-title">Company</div>
-        <ul class="footer-links"><li><a href="#how">How It Works</a></li><li><a href="#gallery">Portfolio</a></li><li><a href="#faq">FAQ</a></li><li><a href="project.html">Start a Project</a></li></ul>
+        <ul class="footer-links"><li><a href="#how">How It Works</a></li><li><a href="#gallery">Portfolio</a></li><li><a href="#faq">FAQ</a></li><li><a href="submit.html">Start a Project</a></li></ul>
       </div>
       <div>
         <div class="footer-col-title">Contact</div>
@@ -629,7 +872,7 @@
 
 <script type="module">
 import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, doc, setDoc, serverTimestamp }
+import { getFirestore, doc, setDoc, collection, query, orderBy, onSnapshot, updateDoc, serverTimestamp }
                                 from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {
   getAuth, onAuthStateChanged,
@@ -658,15 +901,23 @@ await setPersistence(auth, browserLocalPersistence);
 
 let pendingVerificationUser = null;
 
+// ── LOADING STATUS UPDATER ──
+function updateLoadingStatus(message) {
+  const statusEl = document.getElementById('loading-status');
+  if (statusEl) { statusEl.textContent = message; }
+}
+
 // ── HIDE LOADING SCREEN ──
 function hideLoading() {
+  updateLoadingStatus('Ready!');
   setTimeout(() => {
     document.getElementById('loading-screen').classList.add('hidden');
-  }, 400);
+  }, 600);
 }
 
 // ── AUTH STATE ──
 onAuthStateChanged(auth, user => {
+  updateLoadingStatus(user ? 'Authenticating your session' : 'Checking authentication');
   hideLoading();
   const signinBtn  = document.getElementById('nav-signin-btn');
   const startBtn   = document.getElementById('nav-start-btn');
@@ -706,6 +957,7 @@ onAuthStateChanged(auth, user => {
     } else {
       warnEl.style.display = 'none';
     }
+    attachUserNotificationListener(user.uid);
   } else {
     signinBtn.style.display  = '';
     signupBtn.style.display  = '';
@@ -863,6 +1115,57 @@ window.switchTab = function(tab) {
   });
   clearErrors();
 };
+
+const notificationState = { listener: null, notifications: [] };
+
+function attachUserNotificationListener(uid) {
+  if (!uid) return;
+  if (notificationState.listener) notificationState.listener();
+  const notifQuery = query(collection(db, 'users', uid, 'notifications'), orderBy('timestamp', 'desc'));
+  notificationState.listener = onSnapshot(notifQuery, snapshot => {
+    const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    notificationState.notifications = notifications;
+    renderNotificationDropdown(notifications);
+    showNewNotifications(notifications);
+  });
+}
+
+function renderNotificationDropdown(notifications) {
+  const list = document.getElementById('notification-list');
+  const badge = document.getElementById('notification-badge');
+  if (!list || !badge) return;
+  const unreadCount = notifications.filter(n => !n.read).length;
+  badge.style.display = unreadCount ? 'flex' : 'none';
+  badge.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
+  if (!notifications.length) {
+    list.innerHTML = '<div class="notification-empty">No notifications yet.</div>';
+    return;
+  }
+  list.innerHTML = notifications.slice(0, 6).map(note => `
+    <div class="notification-item ${note.type === 'error' ? 'error' : ''} ${!note.read ? 'unread' : ''}">
+      <div class="note-message">${note.message}</div>
+      <div class="note-meta"><span>${new Date(note.timestamp?.seconds ? note.timestamp.seconds * 1000 : note.timestamp || 0).toLocaleString()}</span><span>${note.type === 'error' ? 'Rejected' : note.type === 'gold' ? 'Update' : 'Info'}</span></div>
+    </div>`).join('');
+}
+
+function showNewNotifications(notifications) {
+  const shownIds = JSON.parse(localStorage.getItem('shown_notification_ids') || '[]');
+  const newNotes = notifications.filter(n => !shownIds.includes(n.id));
+  newNotes.forEach(note => {
+    showNotif(note.message, note.type === 'error' ? 'error' : note.type || 'gold');
+    shownIds.push(note.id);
+  });
+  localStorage.setItem('shown_notification_ids', JSON.stringify(shownIds));
+}
+
+async function markAllNotificationsRead() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const unread = notificationState.notifications.filter(n => !n.read);
+  const updates = unread.map(note => updateDoc(doc(db, 'users', user.uid, 'notifications', note.id), { read: true }));
+  await Promise.all(updates);
+}
+
 window.toggleUserMenu = function() {
   const dd = document.getElementById('user-dropdown');
   dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
@@ -875,13 +1178,31 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── NOTIFICATION SYSTEM ──
+// ── NOTIFICATION SYSTEM WITH HISTORY ──
 window.showNotif = function(msg, type = '') {
   const container = document.getElementById('notif-container');
   const toast = document.createElement('div');
   toast.className = `notif-toast ${type}`;
   toast.innerHTML = `<div class="notif-dot"></div>${msg}`;
   container.appendChild(toast);
+  
+  // Save to notification history
+  if (auth.currentUser) {
+    const timestamp = new Date();
+    const notification = {
+      message: msg,
+      type: type,
+      timestamp: timestamp.getTime(),
+      uid: auth.currentUser.uid,
+      read: false
+    };
+    // Save to localStorage as fallback, and also to Firestore when saving project
+    const history = JSON.parse(localStorage.getItem('notification_history') || '[]');
+    history.unshift(notification);
+    if (history.length > 100) history.pop(); // Keep last 100
+    localStorage.setItem('notification_history', JSON.stringify(history));
+  }
+  
   requestAnimationFrame(() => {
     requestAnimationFrame(() => toast.classList.add('show'));
   });
@@ -891,20 +1212,18 @@ window.showNotif = function(msg, type = '') {
   }, 4000);
 };
 
+// ── GET NOTIFICATION HISTORY ──
+window.getNotificationHistory = function(limit = 20) {
+  const history = JSON.parse(localStorage.getItem('notification_history') || '[]');
+  return history.slice(0, limit);
+};
+
+// ── CLEAR NOTIFICATION HISTORY ──
+window.clearNotificationHistory = function() {
+  localStorage.setItem('notification_history', '[]');
+};
+
 // ── CURSOR ──
-const cursor = document.getElementById('cursor');
-let cx = 0, cy = 0, tx = 0, ty = 0;
-document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-function animateCursor() {
-  cx += (tx - cx) * 0.15; cy += (ty - cy) * 0.15;
-  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
-  requestAnimationFrame(animateCursor);
-}
-animateCursor();
-document.querySelectorAll('a, button, .chip, .step, .faq-item, .service-card, .gallery-item').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
-});
 
 // ── MARQUEE ──
 const items = ['Poster Design','Brand Identity','Web Development','Thumbnail Art','Video Editing','UI Design','Logo Design','Motion Graphics','Typography','Creative Strategy','Visual Storytelling','Digital Art'];
@@ -963,6 +1282,19 @@ window.addEventListener('scroll', () => {
     const link = document.querySelector(`.nav-links a[href="#${sec.id}"]`);
     if (link) link.style.color = scrollY >= top && scrollY < bottom ? 'var(--text)' : '';
   });
+});
+
+// ── FULLSCREEN ──
+window.toggleFullscreen = function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen request denied:', err));
+  } else {
+    document.exitFullscreen();
+  }
+};
+document.addEventListener('fullscreenchange', () => {
+  const hint = document.querySelector('.fullscreen-hint');
+  if (hint) hint.textContent = document.fullscreenElement ? '✕ Exit Fullscreen • Esc' : '💾 Fullscreen • Press F11';
 });
 </script>
 </body>

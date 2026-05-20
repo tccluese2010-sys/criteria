@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Theme & Accent — CRITERIA</title>
+  <link rel="icon" href="Tools/Logo Black.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{--gold:#f0a500;--bg:#080808;--text:#f5f5f5;--radius:12px}
+    body{font-family:DM Sans,system-ui,Segoe UI,Arial;background:var(--bg);color:var(--text);margin:0;padding:28px}
+    .wrap{max-width:720px;margin:0 auto}
+    h1{font-family:Syne,serif;margin-bottom:14px}
+    .theme-grid{display:flex;gap:12px}
+    .theme-card{flex:1;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;cursor:pointer;border:2px solid transparent}
+    .theme-card.selected{border-color:var(--gold)}
+    .accent-row{display:flex;gap:10px;margin-top:14px}
+    .accent-swatch{width:38px;height:38px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+    .accent-swatch.selected{box-shadow:0 0 0 2px var(--bg),0 0 0 4px rgba(255,255,255,0.14)}
+    .note{margin-top:18px;color:#a9a9a9;font-size:0.92rem}
+  </style>
+  <!-- Apply saved theme early to avoid flash -->
+  <script>
+    (function(){
+      const t = localStorage.getItem('criteria-theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+      const a = localStorage.getItem('criteria-accent'); if (a) document.documentElement.style.setProperty('--gold', a);
+    })();
+  </script>
+  <script src="themeAccent.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Theme & Accent</h1>
+    <div class="theme-grid">
+      <div class="theme-card" id="theme-card-dark" onclick="setTheme('dark')">
+        <strong>Dark</strong>
+        <div style="font-size:0.9rem;color:#bdbdbd;margin-top:6px">Default dark appearance</div>
+      </div>
+      <div class="theme-card" id="theme-card-light" onclick="setTheme('light')">
+        <strong>Light</strong>
+        <div style="font-size:0.9rem;color:#bdbdbd;margin-top:6px">Brighter, minimal look</div>
+      </div>
+    </div>
+
+    <div class="note">Accent colors</div>
+    <div class="accent-row" id="accent-row">
+      <div class="accent-swatch" style="background:#f0a500" data-color="#f0a500" onclick="setAccent('#f0a500', this)"></div>
+      <div class="accent-swatch" style="background:#4f8ef7" data-color="#4f8ef7" onclick="setAccent('#4f8ef7', this)"></div>
+      <div class="accent-swatch" style="background:#a78bfa" data-color="#a78bfa" onclick="setAccent('#a78bfa', this)"></div>
+      <div class="accent-swatch" style="background:#22c55e" data-color="#22c55e" onclick="setAccent('#22c55e', this)"></div>
+      <div class="accent-swatch" style="background:#ef4444" data-color="#ef4444" onclick="setAccent('#ef4444', this)"></div>
+    </div>
+
+    <p class="note">This page centralizes theme controls. Changes persist across pages.</p>
+  </div>
+</body>
+</html>
